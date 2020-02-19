@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python3 
 # -*- coding: utf-8 -*-
 
 """ 
@@ -21,7 +21,7 @@ __status__ = "Active"
 from ev3dev.ev3 import TouchSensor, Button, LargeMotor, Sound
 # Na EV3 robotu je potrebno namestiti paketa ujson in pycurl:
 # sudo apt-get update
-# sudo apt-get install python3-pycurl
+# sudo apt-get install python3-pycurl -
 # sudo apt-get install python3-ujson
 import pycurl
 import ujson
