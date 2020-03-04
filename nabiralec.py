@@ -1,13 +1,13 @@
-#!/usr/bin/env python3 
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
 """ 
 Program za vodenje robota EV3 po seznamu tock na poligonu.
-[Robo liga FRI 2019: Sadovnjak]
+[Robo liga FRI 2020: Cebelnjak]
 """
 
 __author__ = "Laboratory for adaptive systems and parallel processing"
-__copyright__ = "Copyright 2019, UL FRI - LASPP"
+__copyright__ = "Copyright 2020, UL FRI - LASPP"
 __credits__ = ["Laboratory for adaptive systems and parallel processing"]
 __license__ = "GPL"
 __version__ = "0.1"
@@ -16,12 +16,13 @@ __email__ = "nejc.ilc@fri.uni-lj.si"
 __status__ = "Active"
 
 
-# Ce zelite na svojem racunalniku namestiti ev3dev knjiznico za Python:
+# Če želite na svojem računalniku namestiti knjižnico python-ev3dev 
+# in uprorabljati "code auto-completition":
 # pip install python-ev3dev
-from ev3dev.ev3 import TouchSensor, Button, LargeMotor, Sound
+from ev3dev.ev3 import TouchSensor, Button, LargeMotor, MediumMotor, Sound
 # Na EV3 robotu je potrebno namestiti paketa ujson in pycurl:
 # sudo apt-get update
-# sudo apt-get install python3-pycurl -
+# sudo apt-get install python3-pycurl
 # sudo apt-get install python3-ujson
 import pycurl
 import ujson
@@ -32,18 +33,19 @@ from time import time, sleep
 from enum import Enum
 from collections import deque
 
-# ID robota. Spremenite, da ustreza stevilki označbe, ki je določena vaši ekipi.
-ROBOT_ID = 25
-# Konfiguracija povezave na strežnik. LASPP strežnik ima naslov "192.168.0.3".
+# Nastavitev najpomembnjših parametrov
+# ID robota. Spremenite, da ustreza številki označbe, ki je določena vaši ekipi.
+ROBOT_ID = 5
+# Naslov IP igralnega strežnika.
 SERVER_IP = "192.168.1.130:8088/game/"
-# Datoteka na strežniku s podatki o tekmi.
-GAME_ID = "ec0a"
+# Datoteka na igralnem strežniku s podatki o tekmi.
+GAME_ID = "f599"
 
 # Priklop motorjev na izhode.
 MOTOR_LEFT_PORT = 'outA'
 MOTOR_RIGHT_PORT = 'outD'
 
-# Najvišja dovoljena hitrost motorjev.
+# Najvišja dovoljena hitrost motorjev (teoretično je to 1000).
 SPEED_MAX = 900
 # Najvišja dovoljena nazivna hitrost motorjev pri vožnji naravnost.
 # Naj bo manjša kot SPEED_MAX, da ima robot še možnost zavijati.
@@ -51,30 +53,30 @@ SPEED_BASE_MAX = 800
 
 # Parametri za PID
 # Obračanje na mestu in zavijanje med vožnjo naravnost
-PID_TURN_KP = 3.0
-PID_TURN_KI = 0.5
-PID_TURN_KD = 0.0
-PID_TURN_INT_MAX = 100
+PID_TURN_KP = 1
+PID_TURN_KI = .06
+PID_TURN_KD = 0
+PID_TURN_INT_MAX = 50
 # Nazivna hitrost pri vožnji naravnost.
-PID_STRAIGHT_KP = 2.0
-PID_STRAIGHT_KI = 0.5
-PID_STRAIGHT_KD = 0.01
-PID_STRAIGHT_INT_MAX = 100
+PID_STRAIGHT_KP = .3
+PID_STRAIGHT_KI = .2
+PID_STRAIGHT_KD = 0
+PID_STRAIGHT_INT_MAX = 50
 
 # Dolžina FIFO vrste za hranjenje meritev (oddaljenost in kot do cilja).
 HIST_QUEUE_LENGTH = 3
 
 # Razdalje - tolerance
 # Dovoljena napaka v oddaljenosti do cilja [mm].
-DIST_EPS = 20
+DIST_EPS = 125
 # Dovoljena napaka pri obračanju [stopinje].
-DIR_EPS = 5
+DIR_EPS = 10
 # Bližina cilja [mm].
-DIST_NEAR = 100
+DIST_NEAR = 50
 # Koliko sekund je robot lahko stanju vožnje naravnost v bližini cilja
 # (oddaljen manj kot DIST_NEAR), preden sprožimo varnostni mehanizem
 # in ga damo v stanje obračanja na mestu.
-TIMER_NEAR_TARGET = 3
+TIMER_NEAR_TARGET = 2
 
 
 class State(Enum):
@@ -88,6 +90,8 @@ class State(Enum):
     TURN = 1
     DRIVE_STRAIGHT = 2
     LOAD_NEXT_TARGET = 3
+    CLOSE = 4
+    OPEN = 5
 
 
 class Connection():
@@ -136,7 +140,7 @@ class Connection():
         Zgolj informativno.
         """
         sum_time = 0
-        for i in range(num_iters):
+        for _ in range(num_iters):
             start_time = time()
             if self.request(True) == -1:
                 robot_die()
@@ -150,6 +154,7 @@ class PID():
     Implementacija algoritma za regulacijo PID.
     Nekaj virov za razjasnitev osnovnega načela delovanja:
         - https://en.wikipedia.org/wiki/PID_controller
+        - https://www.csimn.com/CSI_pages/PIDforDummies.html
         - https://blog.opticontrols.com/archives/344
         - https://www.youtube.com/watch?v=d2AWIA6j0NU
     """
@@ -258,6 +263,7 @@ class PID():
                 # Ojačitev integralnega dela.
                 I = self._Ki * self._integral
                 if self._integral_limit is not None:
+                    # Omejimo integralni del.
                     I = max(min(I, self._integral_limit),
                             (-1)*(self._integral_limit))
 
@@ -317,9 +323,23 @@ def init_large_motor(port: str) -> LargeMotor:
     motor = LargeMotor(port)
     while not motor.connected:
         print('\nPriklopi motor na izhod ' + port +
-              ' in pritisni + spusti gumb DOL.')
+              ' in pritisni ter spusti gumb DOL.')
         wait_for_button('down')
         motor = LargeMotor(port)
+    return motor
+
+
+def init_medium_motor(port: str) -> MediumMotor:
+    """
+    Preveri, ali je motor priklopljen na izhod `port`.
+    Vrne objekt za motor (MediumMotor).
+    """
+    motor = MediumMotor(port)
+    while not motor.connected:
+        print('\nPriklopi motor na izhod ' + port +
+              ' in pritisni ter spusti gumb DOL.')
+        wait_for_button('down')
+        motor = MediumMotor(port)
     return motor
 
 
@@ -330,7 +350,7 @@ def init_sensor_touch() -> TouchSensor:
     """
     sensor = TouchSensor()
     while not sensor.connected:
-        print('\nPriklopi tipalo za dotik in pritisni + spusti gumb DOL.')
+        print('\nPriklopi tipalo za dotik in pritisni ter spusti gumb DOL.')
         wait_for_button('down')
         sensor = TouchSensor()
     return sensor
@@ -371,14 +391,30 @@ def robot_die():
     sys.exit(0)
 
 
+
+#-------- FUNKCIJE -------------
+
+def get_next_point(rp, hives, team_my_tag):
+    best_cost = (0, 99999, None)
+    for id, data in hives.items():
+        if data["type"] == "HIVE_HEALTHY":
+
+            hp = Point(data["position"])
+            cost = get_distance(rp, hp) / (data["points"][team_my_tag] ** 0.5)
+
+            if cost < best_cost[1]:
+                best_cost = (id, cost, hp)
+    
+    return best_cost[-1]
+
 # -----------------------------------------------------------------------------
 # NASTAVITVE TIPAL, MOTORJEV IN POVEZAVE S STREŽNIKOM
 # -----------------------------------------------------------------------------
 # Nastavimo tipala in gumbe.
 print('Priprava tipal ... ', end='', flush=True)
 btn = Button()
-sensor_touch = init_sensor_touch()
-print('OK!')
+#sensor_touch = init_sensor_touch()
+#print('OK!')
 
 # Nastavimo velika motorja. Priklopljena naj bosta na izhoda A in D.
 print('Priprava motorjev ... ', end='')
@@ -392,7 +428,7 @@ print('Vspostavljanje povezave z naslovom ' + url + ' ... ', end='', flush=True)
 conn = Connection(url)
 print('OK!')
 
-# Izmerimo zakasnitev pri pridobivanju podatkov (povprečje num_iters meritev)
+# Informativno izmerimo zakasnitev pri pridobivanju podatkov (povprečje num_iters meritev)
 print('Zakasnitev v komunikaciji s streznikom ... ', end='', flush=True)
 print('%.4f s' % (conn.test_delay(num_iters=10)))
 
@@ -402,29 +438,24 @@ print('%.4f s' % (conn.test_delay(num_iters=10)))
 # -----------------------------------------------------------------------------
 # Pridobimo podatke o tekmi.
 game_state = conn.request()
+MY_HIVE = None
+OP_HIVE = None
+
 # Ali naš robot sploh tekmuje? Če tekmuje, ali je team1 ali team2?
 if ROBOT_ID == game_state['teams']['team1']['id']:
     team_my_tag = 'team1'
     team_op_tag = 'team2'
+    MY_HIVE = Point({"x": 250, "y": 750})
+    OP_HIVE = Point({"x": 3254, "y": 750})
 elif ROBOT_ID == game_state['teams']['team2']['id']:
     team_my_tag = 'team2'
     team_op_tag = 'team1'
+    MY_HIVE = Point({"x": 3254, "y": 750})
+    OP_HIVE = Point({"x": 250, "y": 750})
 else:
     print('Robot ne tekmuje.')
     robot_die()
 print('Robot tekmuje in ima interno oznako "' + team_my_tag + '"')
-
-# Doloci cilj za robota (seznam točk na poligonu).
-# Našem primeru se bo vozil po notranjih kotih obeh košar.
-targets_list = [
-    Point(game_state['fields']['baskets'][team_my_tag]['bottomLeft']),
-    Point(game_state['fields']['baskets'][team_my_tag]['topLeft']),
-    Point(game_state['fields']['baskets'][team_op_tag]['topRight']),
-    Point(game_state['fields']['baskets'][team_op_tag]['bottomRight']),
-]
-print('Seznam ciljnih tock:')
-for trgt in targets_list:
-    print('\t' + str(trgt))
 
 
 # -----------------------------------------------------------------------------
@@ -439,6 +470,18 @@ state = State.IDLE
 state_old = -1
 # Indeks trenutne ciljne lokacije.
 target_idx = 0
+collecting = True
+
+# Izberi cilj
+robot_pos = None
+target = None
+hive_id = 0
+for robot_data in game_state['objects']['robots'].values():
+    if robot_data['id'] == ROBOT_ID:
+        robot_pos = Point(robot_data['position'])
+
+target = get_next_point(robot_pos, game_state['objects']['hives'], team_my_tag)
+
 
 # Regulator PID za obračanje na mestu.
 # setpoint=0 pomeni, da naj bo kot med robotom in ciljem (target_angle) enak 0.
@@ -474,8 +517,8 @@ PID_frwd_turn = PID(
 speed_right = 0
 speed_left = 0
 
-# Zgodovina (okno) zadnjih nekaj vrednosti meritev,
-# implementirana kot vrsta FIFO.
+# Zgodovina (okno) zadnjih nekaj vrednosti meritev kota in razdalje.
+# Implementirana je kot vrsta FIFO.
 robot_dir_hist = deque([180.0] * HIST_QUEUE_LENGTH)
 robot_dist_hist = deque([math.inf] * HIST_QUEUE_LENGTH)
 
@@ -496,9 +539,6 @@ while do_main_loop and not btn.down:
     else:
         state_changed = False
     state_old = state
-
-    # Iz seznama ciljev izberi trenutnega.
-    target = targets_list[target_idx]
 
     # Osveži stanje tekme.
     game_state = conn.request()
@@ -524,6 +564,7 @@ while do_main_loop and not btn.down:
         # potem izračunamo novo hitrost na motorjih.
         # Sicer motorje ustavimo.
         if game_on and robot_alive:
+
             # Razdalja med robotom in ciljem.
             target_dist = get_distance(robot_pos, target)
             # Kot med robotom in ciljem.
@@ -549,11 +590,13 @@ while do_main_loop and not btn.down:
                     state = State.LOAD_NEXT_TARGET
 
             elif state == State.LOAD_NEXT_TARGET:
-                # Naložimo naslednjo ciljno točko iz seznama.
-                target_idx = target_idx + 1
-                # Če smo prišli do konca seznama, gremo spet od začetka
-                if target_idx >= len(targets_list):
-                    target_idx = 0
+                # ce smo nasli panj gremo domov in obratno
+                if collecting:
+                    target = MY_HIVE
+                else:
+                    target = get_next_point(robot_pos, game_state['objects']['hives'], team_my_tag)
+
+                collecting = not collecting
                 state = State.IDLE
 
             elif state == State.TURN:
@@ -629,7 +672,7 @@ while do_main_loop and not btn.down:
                     speed_left = 0
                     state = State.LOAD_NEXT_TARGET
                 elif timer_near_target < 0:
-                    # Smo morda blizu cilja, in je varnostna budilka potekla?
+                    # Smo morda blizu cilja in je varnostna budilka potekla?
                     speed_right = 0
                     speed_left = 0
                     state = State.TURN
@@ -657,13 +700,13 @@ while do_main_loop and not btn.down:
                                 max(speed_left, -SPEED_MAX),
                                 SPEED_MAX)
                             )
-
-            # Vrtimo motorje.
+            # Izračunane hitrosti zapišemo na motorje.
             motor_right.run_forever(speed_sp=speed_right)
             motor_left.run_forever(speed_sp=speed_left)
 
         else:
-            # Robot bodisi ni viden na kameri bodisi tekma ne teče.
+            # Robot bodisi ni viden na kameri bodisi tekma ne teče, 
+            # zato ustavimo motorje.
             motor_left.stop(stop_action='brake')
             motor_right.stop(stop_action='brake')
 
