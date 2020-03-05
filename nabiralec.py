@@ -39,11 +39,12 @@ ROBOT_ID = 5
 # Naslov IP igralnega strežnika.
 SERVER_IP = "192.168.1.130:8088/game/"
 # Datoteka na igralnem strežniku s podatki o tekmi.
-GAME_ID = "f599"
+GAME_ID = "3128"
 
 # Priklop motorjev na izhode.
 MOTOR_LEFT_PORT = 'outA'
 MOTOR_RIGHT_PORT = 'outD'
+MOTOR_MEDIUM_PORT = 'outB'
 
 # Najvišja dovoljena hitrost motorjev (teoretično je to 1000).
 SPEED_MAX = 900
@@ -78,6 +79,8 @@ DIST_NEAR = 50
 # in ga damo v stanje obračanja na mestu.
 TIMER_NEAR_TARGET = 2
 
+
+SONG_LYRICS = "This is a work in progress robot. Don't judge me."
 
 class State(Enum):
     """
@@ -394,10 +397,24 @@ def robot_die():
 
 #-------- FUNKCIJE -------------
 
-def get_next_point(rp, hives, team_my_tag):
+def get_next_healthy(rp, hives, team_my_tag):
     best_cost = (0, 99999, None)
     for id, data in hives.items():
         if data["type"] == "HIVE_HEALTHY":
+
+            hp = Point(data["position"])
+            cost = get_distance(rp, hp) / (data["points"][team_my_tag] ** 0.6)
+
+            if cost < best_cost[1]:
+                best_cost = (id, cost, hp)
+    
+    return best_cost[0], best_cost[-1]
+
+
+def get_next_diseaset(rp, hives, team_my_tag):
+    best_cost = (0, 99999, None)
+    for id, data in hives.items():
+        if data["type"] == "HIVE_DISEASED":
 
             hp = Point(data["position"])
             cost = get_distance(rp, hp) / (data["points"][team_my_tag] ** 0.5)
@@ -405,7 +422,16 @@ def get_next_point(rp, hives, team_my_tag):
             if cost < best_cost[1]:
                 best_cost = (id, cost, hp)
     
-    return best_cost[-1]
+    return best_cost[0], best_cost[-1]
+
+
+def lift_cage(motor_medium):
+    motor_medium.run_timed(time_sp=4500, speed_sp=-750)
+    sleep(6)
+
+def drop_cage(motor_medium):
+    motor_medium.run_timed(time_sp=4500, speed_sp=750)
+    sleep(6)
 
 # -----------------------------------------------------------------------------
 # NASTAVITVE TIPAL, MOTORJEV IN POVEZAVE S STREŽNIKOM
@@ -420,6 +446,7 @@ btn = Button()
 print('Priprava motorjev ... ', end='')
 motor_left = init_large_motor(MOTOR_LEFT_PORT)
 motor_right = init_large_motor(MOTOR_RIGHT_PORT)
+motor_medium = init_medium_motor(MOTOR_MEDIUM_PORT)
 print('OK!')
 
 # Nastavimo povezavo s strežnikom.
@@ -445,13 +472,13 @@ OP_HIVE = None
 if ROBOT_ID == game_state['teams']['team1']['id']:
     team_my_tag = 'team1'
     team_op_tag = 'team2'
-    MY_HIVE = Point({"x": 250, "y": 750})
-    OP_HIVE = Point({"x": 3254, "y": 750})
+    MY_HIVE = Point({"x": 250, "y": 762})
+    OP_HIVE = Point({"x": 3254, "y": 762})
 elif ROBOT_ID == game_state['teams']['team2']['id']:
     team_my_tag = 'team2'
     team_op_tag = 'team1'
-    MY_HIVE = Point({"x": 3254, "y": 750})
-    OP_HIVE = Point({"x": 250, "y": 750})
+    MY_HIVE = Point({"x": 3254, "y": 762})
+    OP_HIVE = Point({"x": 250, "y": 762})
 else:
     print('Robot ne tekmuje.')
     robot_die()
@@ -464,6 +491,8 @@ print('Robot tekmuje in ima interno oznako "' + team_my_tag + '"')
 print('Izvajam glavno zanko. Prekini jo s pritiskon na tipko DOL.')
 print('Cakam na zacetek tekme ...')
 
+Sound.speak(SONG_LYRICS)
+
 # Začetno stanje.
 state = State.IDLE
 # Prejšnje stanje.
@@ -471,6 +500,7 @@ state_old = -1
 # Indeks trenutne ciljne lokacije.
 target_idx = 0
 collecting = True
+diseaset = False
 
 # Izberi cilj
 robot_pos = None
@@ -480,7 +510,17 @@ for robot_data in game_state['objects']['robots'].values():
     if robot_data['id'] == ROBOT_ID:
         robot_pos = Point(robot_data['position'])
 
-target = get_next_point(robot_pos, game_state['objects']['hives'], team_my_tag)
+target_idx, target = get_next_healthy(robot_pos, game_state['objects']['hives'], team_my_tag)
+if target == None:
+    target_idx, target = get_next_diseaset(robot_pos, game_state['objects']['hives'], team_my_tag)
+    if target == None:
+        target_idx = 0
+        target = robot_pos
+        collecting = False
+    else:
+        diseaset = True
+else:
+    diseaset = False
 
 
 # Regulator PID za obračanje na mestu.
@@ -592,9 +632,26 @@ while do_main_loop and not btn.down:
             elif state == State.LOAD_NEXT_TARGET:
                 # ce smo nasli panj gremo domov in obratno
                 if collecting:
-                    target = MY_HIVE
+                    drop_cage(motor_medium)
+
+                    if diseaset:
+                        target = OP_HIVE
+                    else:
+                        target = MY_HIVE
                 else:
-                    target = get_next_point(robot_pos, game_state['objects']['hives'], team_my_tag)
+                    lift_cage(motor_medium)
+
+                    target_idx, target = get_next_healthy(robot_pos, game_state['objects']['hives'], team_my_tag)
+                    if target == None:
+                        target_idx, target = get_next_diseaset(robot_pos, game_state['objects']['hives'], team_my_tag)
+                        if target == None:
+                            target_idx = 0
+                            target = robot_pos
+                            collecting = False
+                        else:
+                            diseaset = True
+                    else:
+                        diseaset = False
 
                 collecting = not collecting
                 state = State.IDLE
