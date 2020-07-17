@@ -39,12 +39,7 @@ ROBOT_ID = 32
 # Naslov IP igralnega strežnika.
 SERVER_IP = "192.168.2.3/game/"
 # Datoteka na igralnem strežniku s podatki o tekmi.
-
-if len(sys.argv) > 1:
-	GAME_ID = sys.argv[1]
-else:
-	print('You didnt provid a game id...\n[Usage] python3 nabiralec.py <game_id>')
-	sys.exit(0) 
+GAME_ID = "db1a"
 
 # Priklop motorjev na izhode.
 MOTOR_LEFT_PORT = 'outA'
@@ -74,7 +69,7 @@ HIST_QUEUE_LENGTH = 3
 
 # Razdalje - tolerance
 # Dovoljena napaka v oddaljenosti do cilja [mm].
-DIST_EPS = 170
+DIST_EPS = 125
 # Dovoljena napaka pri obračanju [stopinje].
 DIR_EPS = 10
 # Bližina cilja [mm].
@@ -442,7 +437,7 @@ def drop_cage(motor_medium):
 def reverse(motor_left, motor_right):
     motor_left.run_timed(time_sp=1000, speed_sp=-450)
     motor_right.run_timed(time_sp=1000, speed_sp=-450)
-    sleep(2)
+    sleep(3)
 
 # -----------------------------------------------------------------------------
 # NASTAVITVE TIPAL, MOTORJEV IN POVEZAVE S STREŽNIKOM
