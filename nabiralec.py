@@ -86,7 +86,7 @@ TIMER_NEAR_TARGET = 2
 
 
 SONG_LYRICS = " "
-
+hives_in_control = 0
 class State(Enum):
     """
     Stanja robota.
@@ -401,7 +401,14 @@ def robot_die():
 
 
 #-------- FUNKCIJE -------------
-
+"""
+def use_double_kibla(hives, curent_hive, HIVE_IGNORE_LIST):
+    if curent_hive:
+        if len(hives) > 1:
+            return 1
+    else: 
+        return 0
+"""
 def get_next_healthy(rp, hives, team_my_tag, HIVE_IGNORE_LIST):
     best_cost = (0, 99999, None)
     for id, data in hives.items():
@@ -431,12 +438,12 @@ def get_next_diseaset(rp, hives, team_my_tag, HIVE_IGNORE_LIST):
 
 
 def lift_cage(motor_medium):
-    motor_medium.run_timed(time_sp=2500, speed_sp=-800)
+    motor_medium.run_timed(time_sp=1000, speed_sp=-800)
     sleep(6)
     
 
 def drop_cage(motor_medium):
-    motor_medium.run_timed(time_sp=2500, speed_sp=800)
+    motor_medium.run_timed(time_sp=500, speed_sp=800)
     sleep(6)
 
 def reverse(motor_left, motor_right):
@@ -676,13 +683,17 @@ while do_main_loop and not btn.down:
                 if collecting:
                     if not reset_target:
                         drop_cage(motor_medium)
+                        hives_in_control +=1
 
                     if diseaset:
                         target_idx = 0
                         target = OP_HIVE
                     else:
-                        target_idx = 0
-                        target = MY_HIVE
+                        if hives_in_control ==1:
+                            target_idx, target = get_next_healthy(robot_pos, game_state['objects']['hives'], team_my_tag, HIVE_IGNORE_LIST)
+                        else:
+                            target_idx = 0
+                            target = MY_HIVE
 
                 else:
                     if not reset_target:
