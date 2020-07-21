@@ -597,7 +597,7 @@ t_old = time()
 do_main_loop = True
 while do_main_loop and not btn.down:
     try:
-
+        print("ola")
         time_now = time()
         loop_time = time_now - t_old
         t_old = time_now
