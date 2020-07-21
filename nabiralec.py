@@ -688,6 +688,7 @@ while do_main_loop and not btn.down:
 
                     print("distance = " + str(DIST_EPS) + " hives="+str(hives_in_control))
                     if reset_target:
+                        print("Reset9jg")
                         collecting = True
                         lift_cage(motor_medium)
 
