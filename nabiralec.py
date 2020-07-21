@@ -718,8 +718,6 @@ while do_main_loop and not btn.down:
                             else:
                                 target_idx, target = get_next_healthy(robot_pos, game_state['objects']['hives'], team_my_tag, HIVE_IGNORE_LIST)
                         
-
-                            else:
                     else:
                         if not reset_target:
                             lift_cage(motor_medium)
