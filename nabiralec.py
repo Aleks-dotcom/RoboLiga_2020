@@ -78,7 +78,7 @@ DIST_EPS = 170
 # Dovoljena napaka pri obračanju [stopinje].
 DIR_EPS = 10
 # Bližina cilja [mm].
-DIST_NEAR = 50
+DIST_NEAR = 100
 # Koliko sekund je robot lahko stanju vožnje naravnost v bližini cilja
 # (oddaljen manj kot DIST_NEAR), preden sprožimo varnostni mehanizem
 # in ga damo v stanje obračanja na mestu.
@@ -446,7 +446,7 @@ def lift_cage(motor_medium):
         return
     cage_lifted = True
     motor_medium.run_timed(time_sp=2000, speed_sp=-800)
-    sleep(6)
+    sleep(4)
     
 
 def drop_cage(motor_medium):
@@ -455,7 +455,7 @@ def drop_cage(motor_medium):
         return
     cage_lifted = False
     motor_medium.run_timed(time_sp=2000, speed_sp=800)
-    sleep(6)
+    sleep(4)
 
 def reverse(motor_left, motor_right):
     motor_left.run_timed(time_sp=1000, speed_sp=-450)
@@ -722,7 +722,6 @@ while do_main_loop and not btn.down:
                             if hives_in_control == 2:
                                 target_idx = 0
                                 target = MY_HIVE
-                                hives_in_control = 0
                             elif hives_in_control == 1:
                                 if DIST_EPS == 350:
                                     target_idx, target = get_next_healthy(robot_pos, game_state['objects']['hives'], team_my_tag, HIVE_IGNORE_LIST)
@@ -753,6 +752,7 @@ while do_main_loop and not btn.down:
                             diseaset = False
 
                     if (hives_in_control >= 2):
+                        hives_in_control = 0
                         collecting = False
 
                     reset_target = False
