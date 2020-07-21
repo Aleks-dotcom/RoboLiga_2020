@@ -682,6 +682,7 @@ while do_main_loop and not btn.down:
                 # ce smo nasli panj gremo domov in obratno
                 if collecting:
                     if not reset_target:
+                        lift_cage(motor_medium)
                         drop_cage(motor_medium)
                         hives_in_control +=1
 
