@@ -100,6 +100,7 @@ class State(Enum):
     LOAD_NEXT_TARGET = 3
     CLOSE = 4
     OPEN = 5
+    FETCH_2ND_HIVE = 6
 
 
 class Connection():
@@ -638,7 +639,6 @@ while do_main_loop and not btn.down:
 
 
                 # Razdalja med robotom in ciljem.
-                print(robot_pos , target)
                 target_dist = get_distance(robot_pos, target)
                 # Kot med robotom in ciljem.
                 target_angle = get_angle(robot_pos, robot_dir, target)
@@ -689,10 +689,13 @@ while do_main_loop and not btn.down:
                     # ce smo nasli panj gremo domov in obratno
                     if collecting:
                         if not reset_target:
-                            if cage_lifted:
-                                drop_cage(motor_medium)
-                            else:
+                            if DIST_EPS == 250:
                                 lift_cage(motor_medium)
+                            else:
+                                drop_cage(motor_medium)
+                                hives_in_control += 1
+                                if target_idx:
+                                    HIVE_IGNORE_LIST.append(target_idx)
                             
 
                         if diseaset:
@@ -700,15 +703,23 @@ while do_main_loop and not btn.down:
                             target = OP_HIVE
                         else:
 
-                            if hives_in_control ==2:
+                            if hives_in_control == 2:
                                 target_idx = 0
                                 target = MY_HIVE
-                                hives_in_control =0
+                                hives_in_control = 0
+                            elif hives_in_control == 1:
+                                if DIST_EPS == 250:
+                                    target_idx, target = get_next_healthy(robot_pos, game_state['objects']['hives'], team_my_tag, HIVE_IGNORE_LIST)
+                                    DIST_EPS = 170
+                                else:
+                                    target_idx, target = get_next_healthy(robot_pos, game_state['objects']['hives'], team_my_tag, HIVE_IGNORE_LIST)
+                                    DIST_EPS = 250
+
                             else:
                                 target_idx, target = get_next_healthy(robot_pos, game_state['objects']['hives'], team_my_tag, HIVE_IGNORE_LIST)
-                                if target_idx:
-                                    HIVE_IGNORE_LIST.append(target_idx)
-                                    hives_in_control +=1
+                        
+
+                            else:
                     else:
                         if not reset_target:
                             lift_cage(motor_medium)
@@ -730,7 +741,8 @@ while do_main_loop and not btn.down:
                         collecting = False
 
                     reset_target = False
-                    state = State.IDLE
+                    if not (state == State.FETCH_2ND_HIVE):
+                        state = State.IDLE
 
                 elif state == State.TURN:
                     # Obračanje robota na mestu, da bo obrnjen proti cilju.
