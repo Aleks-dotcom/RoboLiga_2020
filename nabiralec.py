@@ -549,6 +549,7 @@ def set_initial_target():
                 diseaset = True
         else:
             diseaset = False
+    print(target)
 
 
 # Regulator PID za obračanje na mestu.
