@@ -704,7 +704,7 @@ while do_main_loop and not btn.down:
                         if not reset_target:
                             if found:
                                 print("found and distance = " + str(DIST_EPS))
-                                if DIST_EPS == 300:
+                                if DIST_EPS == 350:
                                     lift_cage(motor_medium)
                                 else:
                                     drop_cage(motor_medium)
@@ -724,12 +724,12 @@ while do_main_loop and not btn.down:
                                 target = MY_HIVE
                                 hives_in_control = 0
                             elif hives_in_control == 1:
-                                if DIST_EPS == 300:
+                                if DIST_EPS == 350:
                                     target_idx, target = get_next_healthy(robot_pos, game_state['objects']['hives'], team_my_tag, HIVE_IGNORE_LIST)
                                     DIST_EPS = 170
                                 else:
                                     target_idx, target = get_next_healthy(robot_pos, game_state['objects']['hives'], team_my_tag, HIVE_IGNORE_LIST)
-                                    DIST_EPS = 300
+                                    DIST_EPS = 350
 
                             else:
                                 target_idx, target = get_next_healthy(robot_pos, game_state['objects']['hives'], team_my_tag, HIVE_IGNORE_LIST)
