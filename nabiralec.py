@@ -713,8 +713,10 @@ while do_main_loop and not btn.down:
                     else:
                         diseaset = False
 
+                if (hives_in_control >= 2):
+                    collecting = not collecting
+
                 reset_target = False
-                collecting = not collecting
                 state = State.IDLE
 
             elif state == State.TURN:
