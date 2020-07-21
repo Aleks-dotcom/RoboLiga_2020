@@ -438,7 +438,7 @@ def get_next_diseaset(rp, hives, team_my_tag, HIVE_IGNORE_LIST):
     return best_cost[0], best_cost[-1]
 
 
-cage_lifted = True
+global cage_lifted = True
 def lift_cage(motor_medium):
     if (cage_lifted):
         return
