@@ -641,6 +641,7 @@ while do_main_loop and not btn.down:
 
 
                 # Razdalja med robotom in ciljem.
+                print(robot_pos , target)
                 target_dist = get_distance(robot_pos, target)
                 # Kot med robotom in ciljem.
                 target_angle = get_angle(robot_pos, robot_dir, target)
