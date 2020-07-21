@@ -535,18 +535,19 @@ for robot_data in game_state['objects']['robots'].values():
     if robot_data['id'] == ROBOT_ID:
         robot_pos = Point(robot_data['position'])
 
-if robot_pos:
-    target_idx, target = get_next_healthy(robot_pos, game_state['objects']['hives'], team_my_tag, HIVE_IGNORE_LIST)
-    if target == None:
-        target_idx, target = get_next_diseaset(robot_pos, game_state['objects']['hives'], team_my_tag, HIVE_IGNORE_LIST)
+def set_initial_target()
+    if robot_pos:
+        target_idx, target = get_next_healthy(robot_pos, game_state['objects']['hives'], team_my_tag, HIVE_IGNORE_LIST)
         if target == None:
-            target_idx = 0
-            target = robot_pos
-            collecting = False
+            target_idx, target = get_next_diseaset(robot_pos, game_state['objects']['hives'], team_my_tag, HIVE_IGNORE_LIST)
+            if target == None:
+                target_idx = 0
+                target = robot_pos
+                collecting = False
+            else:
+                diseaset = True
         else:
-            diseaset = True
-    else:
-        diseaset = False
+            diseaset = False
 
 
 # Regulator PID za obračanje na mestu.
@@ -628,6 +629,8 @@ while do_main_loop and not btn.down:
             # da sistem ne zazna oznake na robotu.
             robot_alive = (robot_pos is not None) and (robot_dir is not None)
 
+            if (not target):
+                set_initial_target()
             # Če tekma poteka in je oznaka robota vidna na kameri,
             # potem izračunamo novo hitrost na motorjih.
             # Sicer motorje ustavimo.
