@@ -632,9 +632,7 @@ while do_main_loop and not btn.down:
             # da sistem ne zazna oznake na robotu.
             robot_alive = (robot_pos is not None) and (robot_dir is not None)
 
-            if (target is None or not initial_set):
-                set_initial_target()
-                initial_set = True
+            
             # Če tekma poteka in je oznaka robota vidna na kameri,
             # potem izračunamo novo hitrost na motorjih.
             # Sicer motorje ustavimo.
