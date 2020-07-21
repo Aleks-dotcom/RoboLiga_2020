@@ -590,6 +590,7 @@ robot_dir_hist = deque([180.0] * HIST_QUEUE_LENGTH)
 robot_dist_hist = deque([math.inf] * HIST_QUEUE_LENGTH)
 
 cage_lifted = True
+initial_set = False
 
 # Merimo čas obhoda zanke. Za visoko odzivnost robota je zelo pomembno,
 # da je ta čas čim krajši.
@@ -629,8 +630,9 @@ while do_main_loop and not btn.down:
             # da sistem ne zazna oznake na robotu.
             robot_alive = (robot_pos is not None) and (robot_dir is not None)
 
-            if (not target):
+            if (target is None or not initial_set):
                 set_initial_target()
+                initial_set = True
             # Če tekma poteka in je oznaka robota vidna na kameri,
             # potem izračunamo novo hitrost na motorjih.
             # Sicer motorje ustavimo.
