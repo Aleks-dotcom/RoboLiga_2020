@@ -693,7 +693,7 @@ while do_main_loop and not btn.down:
                     if collecting:
                         if not reset_target:
                             if found:
-                                print("found and distance = " + DIST_EPS)
+                                print("found and distance = " + str(DIST_EPS))
                                 if DIST_EPS == 300:
                                     lift_cage(motor_medium)
                                 else:
