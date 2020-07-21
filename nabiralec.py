@@ -686,8 +686,10 @@ while do_main_loop and not btn.down:
 
                 elif state == State.LOAD_NEXT_TARGET:
 
+                    print("distance = " + str(DIST_EPS) + " hives="+str(hives_in_control))
                     if reset_target:
                         collecting = True
+                        lift_cage(motor_medium)
 
                     # ce smo nasli panj gremo domov in obratno
                     if collecting:
