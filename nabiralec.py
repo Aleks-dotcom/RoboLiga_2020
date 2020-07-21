@@ -591,6 +591,7 @@ robot_dist_hist = deque([math.inf] * HIST_QUEUE_LENGTH)
 
 cage_lifted = True
 initial_set = False
+found = False
 
 # Merimo čas obhoda zanke. Za visoko odzivnost robota je zelo pomembno,
 # da je ta čas čim krajši.
@@ -680,6 +681,8 @@ while do_main_loop and not btn.down:
                         robot_near_target_old = False
                     else:
                         state = State.LOAD_NEXT_TARGET
+                        found = True
+
 
                 elif state == State.LOAD_NEXT_TARGET:
 
@@ -689,14 +692,16 @@ while do_main_loop and not btn.down:
                     # ce smo nasli panj gremo domov in obratno
                     if collecting:
                         if not reset_target:
-                            if DIST_EPS == 250:
-                                lift_cage(motor_medium)
-                            else:
-                                drop_cage(motor_medium)
-                                hives_in_control += 1
-                                if target_idx:
-                                    HIVE_IGNORE_LIST.append(target_idx)
-                            
+                            if found:
+                                if DIST_EPS == 250:
+                                    lift_cage(motor_medium)
+                                else:
+                                    drop_cage(motor_medium)
+                                    hives_in_control += 1
+                                    if target_idx:
+                                        HIVE_IGNORE_LIST.append(target_idx)
+                                        
+                                found = False
 
                         if diseaset:
                             target_idx = 0
@@ -717,6 +722,7 @@ while do_main_loop and not btn.down:
 
                             else:
                                 target_idx, target = get_next_healthy(robot_pos, game_state['objects']['hives'], team_my_tag, HIVE_IGNORE_LIST)
+                            
                         
                     else:
                         if not reset_target:
@@ -739,8 +745,7 @@ while do_main_loop and not btn.down:
                         collecting = False
 
                     reset_target = False
-                    if not (state == State.FETCH_2ND_HIVE):
-                        state = State.IDLE
+                    state = State.IDLE
 
                 elif state == State.TURN:
                     # Obračanje robota na mestu, da bo obrnjen proti cilju.
