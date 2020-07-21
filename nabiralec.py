@@ -535,23 +535,20 @@ for robot_data in game_state['objects']['robots'].values():
     if robot_data['id'] == ROBOT_ID:
         robot_pos = Point(robot_data['position'])
 
-def set_initial_target():
-    print("Setting initial target")
-    if robot_pos:
-        target_idx, target = get_next_healthy(robot_pos, game_state['objects']['hives'], team_my_tag, HIVE_IGNORE_LIST)
+if robot_pos:
+    target_idx, target = get_next_healthy(robot_pos, game_state['objects']['hives'], team_my_tag, HIVE_IGNORE_LIST)
+    if target == None:
+        target_idx, target = get_next_diseaset(robot_pos, game_state['objects']['hives'], team_my_tag, HIVE_IGNORE_LIST)
         if target == None:
-            target_idx, target = get_next_diseaset(robot_pos, game_state['objects']['hives'], team_my_tag, HIVE_IGNORE_LIST)
-            if target == None:
-                target_idx = 0
-                target = robot_pos
-                collecting = False
-            else:
-                diseaset = True
+            target_idx = 0
+            target = robot_pos
+            collecting = False
         else:
-            diseaset = False
-    print(target)
+            diseaset = True
+    else:
+        diseaset = False
 
-set_initial_target()
+
 # Regulator PID za obračanje na mestu.
 # setpoint=0 pomeni, da naj bo kot med robotom in ciljem (target_angle) enak 0.
 # Naša regulirana veličina je torej kar napaka kota, ki mora biti 0.
