@@ -438,13 +438,18 @@ def get_next_diseaset(rp, hives, team_my_tag, HIVE_IGNORE_LIST):
     return best_cost[0], best_cost[-1]
 
 
+cage_lifted = True
 def lift_cage(motor_medium):
+    if (cage_lifted):
+        return
     cage_lifted = True
     motor_medium.run_timed(time_sp=2000, speed_sp=-800)
     sleep(6)
     
 
 def drop_cage(motor_medium):
+    if (not cage_lifted):
+        return
     cage_lifted = False
     motor_medium.run_timed(time_sp=2000, speed_sp=800)
     sleep(6)
@@ -589,7 +594,6 @@ speed_left = 0
 robot_dir_hist = deque([180.0] * HIST_QUEUE_LENGTH)
 robot_dist_hist = deque([math.inf] * HIST_QUEUE_LENGTH)
 
-cage_lifted = True
 initial_set = False
 found = False
 
