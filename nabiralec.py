@@ -551,7 +551,7 @@ def set_initial_target():
             diseaset = False
     print(target)
 
-
+set_initial_target()
 # Regulator PID za obračanje na mestu.
 # setpoint=0 pomeni, da naj bo kot med robotom in ciljem (target_angle) enak 0.
 # Naša regulirana veličina je torej kar napaka kota, ki mora biti 0.
