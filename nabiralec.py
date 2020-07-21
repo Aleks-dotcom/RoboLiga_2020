@@ -85,6 +85,8 @@ DIST_NEAR = 50
 TIMER_NEAR_TARGET = 2
 
 
+cage_lifted = True
+
 SONG_LYRICS = " "
 hives_in_control = 0
 class State(Enum):
@@ -438,7 +440,6 @@ def get_next_diseaset(rp, hives, team_my_tag, HIVE_IGNORE_LIST):
     return best_cost[0], best_cost[-1]
 
 
-cage_lifted = True
 def lift_cage(motor_medium):
     if (cage_lifted):
         return
