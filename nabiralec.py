@@ -438,12 +438,12 @@ def get_next_diseaset(rp, hives, team_my_tag, HIVE_IGNORE_LIST):
 
 
 def lift_cage(motor_medium):
-    motor_medium.run_timed(time_sp=1000, speed_sp=-800)
+    motor_medium.run_timed(time_sp=1500, speed_sp=-800)
     sleep(6)
     
 
 def drop_cage(motor_medium):
-    motor_medium.run_timed(time_sp=500, speed_sp=800)
+    motor_medium.run_timed(time_sp=1500, speed_sp=800)
     sleep(6)
 
 def reverse(motor_left, motor_right):
@@ -689,11 +689,12 @@ while do_main_loop and not btn.down:
                         target_idx = 0
                         target = OP_HIVE
                     else:
-                        if hives_in_control ==1:
-                            target_idx, target = get_next_healthy(robot_pos, game_state['objects']['hives'], team_my_tag, HIVE_IGNORE_LIST)
-                        else:
+                        if hives_in_control ==2:
                             target_idx = 0
                             target = MY_HIVE
+                            hives_in_control =0
+                        else:
+                            target_idx, target = get_next_healthy(robot_pos, game_state['objects']['hives'], team_my_tag, HIVE_IGNORE_LIST)
 
                 else:
                     if not reset_target:
