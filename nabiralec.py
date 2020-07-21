@@ -596,248 +596,254 @@ t_old = time()
 
 do_main_loop = True
 while do_main_loop and not btn.down:
+    try:
 
-    time_now = time()
-    loop_time = time_now - t_old
-    t_old = time_now
+        time_now = time()
+        loop_time = time_now - t_old
+        t_old = time_now
 
-    # Zaznaj spremembo stanja.
-    if state != state_old:
-        state_changed = True
-    else:
-        state_changed = False
-    state_old = state
-
-    # Osveži stanje tekme.
-    game_state = conn.request()
-    if game_state == -1:
-        print('Napaka v paketu, ponovni poskuss ...')
-    else:
-        game_on = game_state['gameOn']
-        time_left = game_state['timeLeft']
-
-        # Pridobi pozicijo in orientacijo svojega robota;
-        # najprej pa ga poišči v tabeli vseh robotov na poligonu.
-        robot_pos = None
-        robot_dir = None
-        for robot_data in game_state['objects']['robots'].values():
-            if robot_data['id'] == ROBOT_ID:
-                robot_pos = Point(robot_data['position'])
-                robot_dir = robot_data['dir']
-        # Ali so podatki o robotu veljavni? Če niso, je zelo verjetno,
-        # da sistem ne zazna oznake na robotu.
-        robot_alive = (robot_pos is not None) and (robot_dir is not None)
-
-        # Če tekma poteka in je oznaka robota vidna na kameri,
-        # potem izračunamo novo hitrost na motorjih.
-        # Sicer motorje ustavimo.
-
-        if game_on and robot_alive:
-
-
-            # Razdalja med robotom in ciljem.
-            target_dist = get_distance(robot_pos, target)
-            # Kot med robotom in ciljem.
-            target_angle = get_angle(robot_pos, robot_dir, target)
-            
-            if target_idx != 0 and robot_pos:
-                if target_idx in game_state['objects']['hives']:
-                    target_moved_for = get_distance(target, Point(game_state['objects']['hives'][target_idx]["position"]))
-
-            
-            if target_moved_for > MAX_MOVED_FOR:
-
-                motor_right.stop(stop_action='brake')
-                motor_left.stop(stop_action='brake')
-
-                if target_idx not in HIVE_IGNORE_LIST:
-                    HIVE_IGNORE_LIST.append(target_idx)
-                    if len(HIVE_IGNORE_LIST) >= 2:
-                        HIVE_IGNORE_LIST.pop(0)
-
-                reset_target = True
-                state = State.LOAD_NEXT_TARGET
-
-            # Spremljaj zgodovino meritev kota in oddaljenosti.
-            # Odstrani najstarejši element in dodaj novega - princip FIFO.
-            robot_dir_hist.popleft()
-            robot_dir_hist.append(target_angle)
-            robot_dist_hist.popleft()
-            robot_dist_hist.append(target_dist)
-
-            if state == State.IDLE:
-                # Stanje mirovanja - tu se odločamo, kaj bo robot sedaj počel.
-                speed_right = 0
-                speed_left = 0
-                # Preverimo, ali je robot na ciljni točki.
-                # Če ni, ga tja pošljemo.
-                if target_dist > DIST_EPS:
-                    print("This happened")
-                    state = State.TURN
-                    robot_near_target_old = False
-                else:
-                    state = State.LOAD_NEXT_TARGET
-
-            elif state == State.LOAD_NEXT_TARGET:
-
-                if reset_target:
-                    collecting = not collecting
-
-                # ce smo nasli panj gremo domov in obratno
-                if collecting:
-                    if not reset_target:
-                        if cage_lifted:
-                            drop_cage(motor_medium)
-                        else:
-                            lift_cage(motor_medium)
-                        
-
-                    if diseaset:
-                        target_idx = 0
-                        target = OP_HIVE
-                    else:
-                        if hives_in_control ==2:
-                            target_idx = 0
-                            target = MY_HIVE
-                            hives_in_control =0
-                        else:
-                            target_idx, target = get_next_healthy(robot_pos, game_state['objects']['hives'], team_my_tag, HIVE_IGNORE_LIST)
-                            if target_idx:
-                                HIVE_IGNORE_LIST.append(target_idx)
-                                hives_in_control +=1
-                else:
-                    if not reset_target:
-                        lift_cage(motor_medium)
-                        reverse(motor_left, motor_right)
-
-                    target_idx, target = get_next_healthy(robot_pos, game_state['objects']['hives'], team_my_tag, HIVE_IGNORE_LIST)
-                    if target == None:
-                        target_idx, target = get_next_diseaset(robot_pos, game_state['objects']['hives'], team_my_tag, HIVE_IGNORE_LIST)
-                        if target == None:
-                            target_idx = 0
-                            target = robot_pos
-                            collecting = False
-                        else:
-                            diseaset = True
-                    else:
-                        diseaset = False
-
-                if (hives_in_control >= 2):
-                    collecting = not collecting
-
-                reset_target = False
-                state = State.IDLE
-
-            elif state == State.TURN:
-                # Obračanje robota na mestu, da bo obrnjen proti cilju.
-                if state_changed:
-                    # Če smo ravno prišli v to stanje, najprej ponastavimo PID.
-                    PID_turn.reset()
-
-                # Ali smo že dosegli ciljni kot?
-                # Zadnjih nekaj obhodov zanke mora biti absolutna vrednost
-                # napake kota manjša od DIR_EPS.
-                err = [abs(a) > DIR_EPS for a in robot_dir_hist]
-
-                if sum(err) == 0:
-                    # Vse vrednosti so znotraj tolerance, zamenjamo stanje.
-                    speed_right = 0
-                    speed_left = 0
-                    state = State.DRIVE_STRAIGHT
-                else:
-                    # Reguliramo obračanje.
-                    # Ker se v regulatorju trenutna napaka izračuna kot:
-                    #   error = setpoint - measurement,
-                    # dobimo negativno vrednost, ko se moramo zavrteti
-                    # v pozitivno smer.
-                    # Primer:
-                    #   Robot ima smer 90 stopinj (obrnjen je proti "severu").
-                    #   Cilj se nahaja na njegovi levi in da ga doseže,
-                    #   se mora obrniti za 90 stopinj.
-                    #       setpoint=0
-                    #       target_angle = measurement = 90
-                    #       error = setpoint - measurement = -90
-                    #       u = funkcija, odvisna od error in parametrov PID.
-                    #   Če imamo denimo Kp = 1, Ki = Kd = 0, potem bo u = -90.
-                    #   Robot se mora zavrteti v pozitivno smer,
-                    #   torej z desnim kolesom naprej in levim nazaj.
-                    #   Zato:
-                    #   speed_right = -u
-                    #   speed_left = u
-                    #   Lahko bi tudi naredili droben trik in bi rekli:
-                    #       measurement= -target_angle.
-                    #   V tem primeru bi bolj intuitivno nastavili
-                    #   speed_right = u in speed_left = -u.
-                    u = PID_turn.update(measurement=target_angle)
-                    speed_right = -u
-                    speed_left = u
-
-            elif state == State.DRIVE_STRAIGHT:
-                # Vožnja robota naravnost proti ciljni točki.
-                # Vmes bi radi tudi zavijali, zato uporabimo dva regulatorja.
-                if state_changed:
-                    # Ponastavi regulatorja PID.
-                    PID_frwd_base.reset()
-                    PID_frwd_turn.reset()
-                    timer_near_target = TIMER_NEAR_TARGET
-
-                # Ali smo blizu cilja?
-                robot_near_target = target_dist < DIST_NEAR
-                if not robot_near_target_old and robot_near_target:
-                    # Vstopili smo v bližino cilja.
-                    # Začnimo odštevati varnostno budilko.
-                    timer_near_target = TIMER_NEAR_TARGET
-                if robot_near_target:
-                    timer_near_target = timer_near_target - loop_time
-                robot_near_target_old = robot_near_target
-
-                # Ali smo že na cilju?
-                # Zadnjih nekaj obhodov zanke mora biti razdalja do cilja
-                # manjša ali enaka DIST_EPS.
-                err_eps = [d > DIST_EPS for d in robot_dist_hist]
-                if sum(err_eps) == 0:
-                    # Razdalja do cilja je znotraj tolerance, zamenjamo stanje.
-                    speed_right = 0
-                    speed_left = 0
-                    state = State.LOAD_NEXT_TARGET
-                elif timer_near_target < 0:
-                    # Smo morda blizu cilja in je varnostna budilka potekla?
-                    speed_right = 0
-                    speed_left = 0
-                    state = State.TURN
-                else:
-                    u_turn = PID_frwd_turn.update(measurement=target_angle)
-                    # Ker je napaka izračunana kot setpoint - measurement in
-                    # smo nastavili setpoint na 0, bomo v primeru u_base dobili
-                    # negativne vrednosti takrat, ko se bo robot moral premikati
-                    # naprej. Zato dodamo minus pri izračunu hitrosti motorjev.
-                    u_base = PID_frwd_base.update(measurement=target_dist)
-                    # Omejimo nazivno hitrost, ki je enaka za obe kolesi,
-                    # da imamo še manevrski prostor za zavijanje.
-                    u_base = min(max(u_base, -SPEED_BASE_MAX), SPEED_BASE_MAX)
-                    speed_right = -u_base - u_turn
-                    speed_left = -u_base + u_turn
-
-            # Omejimo vrednosti za hitrosti na motorjih.
-            speed_right = round(
-                            min(
-                                max(speed_right, -SPEED_MAX),
-                                SPEED_MAX)
-                            )
-            speed_left = round(
-                            min(
-                                max(speed_left, -SPEED_MAX),
-                                SPEED_MAX)
-                            )
-            # Izračunane hitrosti zapišemo na motorje.
-            motor_right.run_forever(speed_sp=speed_right)
-            motor_left.run_forever(speed_sp=speed_left)
-
+        # Zaznaj spremembo stanja.
+        if state != state_old:
+            state_changed = True
         else:
-            # Robot bodisi ni viden na kameri bodisi tekma ne teče, 
-            # zato ustavimo motorje.
-            motor_left.stop(stop_action='brake')
-            motor_right.stop(stop_action='brake')
+            state_changed = False
+        state_old = state
 
+        # Osveži stanje tekme.
+        game_state = conn.request()
+        if game_state == -1:
+            print('Napaka v paketu, ponovni poskuss ...')
+        else:
+            game_on = game_state['gameOn']
+            time_left = game_state['timeLeft']
+
+            # Pridobi pozicijo in orientacijo svojega robota;
+            # najprej pa ga poišči v tabeli vseh robotov na poligonu.
+            robot_pos = None
+            robot_dir = None
+            for robot_data in game_state['objects']['robots'].values():
+                if robot_data['id'] == ROBOT_ID:
+                    robot_pos = Point(robot_data['position'])
+                    robot_dir = robot_data['dir']
+            # Ali so podatki o robotu veljavni? Če niso, je zelo verjetno,
+            # da sistem ne zazna oznake na robotu.
+            robot_alive = (robot_pos is not None) and (robot_dir is not None)
+
+            # Če tekma poteka in je oznaka robota vidna na kameri,
+            # potem izračunamo novo hitrost na motorjih.
+            # Sicer motorje ustavimo.
+
+            if game_on and robot_alive:
+
+
+                # Razdalja med robotom in ciljem.
+                target_dist = get_distance(robot_pos, target)
+                # Kot med robotom in ciljem.
+                target_angle = get_angle(robot_pos, robot_dir, target)
+                
+                if target_idx != 0 and robot_pos:
+                    if target_idx in game_state['objects']['hives']:
+                        target_moved_for = get_distance(target, Point(game_state['objects']['hives'][target_idx]["position"]))
+
+                
+                if target_moved_for > MAX_MOVED_FOR:
+
+                    motor_right.stop(stop_action='brake')
+                    motor_left.stop(stop_action='brake')
+
+                    if target_idx not in HIVE_IGNORE_LIST:
+                        HIVE_IGNORE_LIST.append(target_idx)
+                        if len(HIVE_IGNORE_LIST) >= 2:
+                            HIVE_IGNORE_LIST.pop(0)
+
+                    reset_target = True
+                    state = State.LOAD_NEXT_TARGET
+
+                # Spremljaj zgodovino meritev kota in oddaljenosti.
+                # Odstrani najstarejši element in dodaj novega - princip FIFO.
+                robot_dir_hist.popleft()
+                robot_dir_hist.append(target_angle)
+                robot_dist_hist.popleft()
+                robot_dist_hist.append(target_dist)
+
+                if state == State.IDLE:
+                    # Stanje mirovanja - tu se odločamo, kaj bo robot sedaj počel.
+                    speed_right = 0
+                    speed_left = 0
+                    # Preverimo, ali je robot na ciljni točki.
+                    # Če ni, ga tja pošljemo.
+                    if target_dist > DIST_EPS:
+                        print("This happened")
+                        state = State.TURN
+                        robot_near_target_old = False
+                    else:
+                        state = State.LOAD_NEXT_TARGET
+
+                elif state == State.LOAD_NEXT_TARGET:
+
+                    if reset_target:
+                        collecting = True
+
+                    # ce smo nasli panj gremo domov in obratno
+                    if collecting:
+                        if not reset_target:
+                            if cage_lifted:
+                                drop_cage(motor_medium)
+                            else:
+                                lift_cage(motor_medium)
+                            
+
+                        if diseaset:
+                            target_idx = 0
+                            target = OP_HIVE
+                        else:
+
+                            if hives_in_control ==2:
+                                target_idx = 0
+                                target = MY_HIVE
+                                hives_in_control =0
+                            else:
+                                target_idx, target = get_next_healthy(robot_pos, game_state['objects']['hives'], team_my_tag, HIVE_IGNORE_LIST)
+                                if target_idx:
+                                    HIVE_IGNORE_LIST.append(target_idx)
+                                    hives_in_control +=1
+                    else:
+                        if not reset_target:
+                            lift_cage(motor_medium)
+                            reverse(motor_left, motor_right)
+
+                        target_idx, target = get_next_healthy(robot_pos, game_state['objects']['hives'], team_my_tag, HIVE_IGNORE_LIST)
+                        if target == None:
+                            target_idx, target = get_next_diseaset(robot_pos, game_state['objects']['hives'], team_my_tag, HIVE_IGNORE_LIST)
+                            if target == None:
+                                target_idx = 0
+                                target = robot_pos
+                                collecting = False
+                            else:
+                                diseaset = True
+                        else:
+                            diseaset = False
+
+                    if (hives_in_control >= 2):
+                        collecting = False
+
+                    reset_target = False
+                    state = State.IDLE
+
+                elif state == State.TURN:
+                    # Obračanje robota na mestu, da bo obrnjen proti cilju.
+                    if state_changed:
+                        # Če smo ravno prišli v to stanje, najprej ponastavimo PID.
+                        PID_turn.reset()
+
+                    # Ali smo že dosegli ciljni kot?
+                    # Zadnjih nekaj obhodov zanke mora biti absolutna vrednost
+                    # napake kota manjša od DIR_EPS.
+                    err = [abs(a) > DIR_EPS for a in robot_dir_hist]
+
+                    if sum(err) == 0:
+                        # Vse vrednosti so znotraj tolerance, zamenjamo stanje.
+                        speed_right = 0
+                        speed_left = 0
+                        state = State.DRIVE_STRAIGHT
+                    else:
+                        # Reguliramo obračanje.
+                        # Ker se v regulatorju trenutna napaka izračuna kot:
+                        #   error = setpoint - measurement,
+                        # dobimo negativno vrednost, ko se moramo zavrteti
+                        # v pozitivno smer.
+                        # Primer:
+                        #   Robot ima smer 90 stopinj (obrnjen je proti "severu").
+                        #   Cilj se nahaja na njegovi levi in da ga doseže,
+                        #   se mora obrniti za 90 stopinj.
+                        #       setpoint=0
+                        #       target_angle = measurement = 90
+                        #       error = setpoint - measurement = -90
+                        #       u = funkcija, odvisna od error in parametrov PID.
+                        #   Če imamo denimo Kp = 1, Ki = Kd = 0, potem bo u = -90.
+                        #   Robot se mora zavrteti v pozitivno smer,
+                        #   torej z desnim kolesom naprej in levim nazaj.
+                        #   Zato:
+                        #   speed_right = -u
+                        #   speed_left = u
+                        #   Lahko bi tudi naredili droben trik in bi rekli:
+                        #       measurement= -target_angle.
+                        #   V tem primeru bi bolj intuitivno nastavili
+                        #   speed_right = u in speed_left = -u.
+                        u = PID_turn.update(measurement=target_angle)
+                        speed_right = -u
+                        speed_left = u
+
+                elif state == State.DRIVE_STRAIGHT:
+                    # Vožnja robota naravnost proti ciljni točki.
+                    # Vmes bi radi tudi zavijali, zato uporabimo dva regulatorja.
+                    if state_changed:
+                        # Ponastavi regulatorja PID.
+                        PID_frwd_base.reset()
+                        PID_frwd_turn.reset()
+                        timer_near_target = TIMER_NEAR_TARGET
+
+                    # Ali smo blizu cilja?
+                    robot_near_target = target_dist < DIST_NEAR
+                    if not robot_near_target_old and robot_near_target:
+                        # Vstopili smo v bližino cilja.
+                        # Začnimo odštevati varnostno budilko.
+                        timer_near_target = TIMER_NEAR_TARGET
+                    if robot_near_target:
+                        timer_near_target = timer_near_target - loop_time
+                    robot_near_target_old = robot_near_target
+
+                    # Ali smo že na cilju?
+                    # Zadnjih nekaj obhodov zanke mora biti razdalja do cilja
+                    # manjša ali enaka DIST_EPS.
+                    err_eps = [d > DIST_EPS for d in robot_dist_hist]
+                    if sum(err_eps) == 0:
+                        # Razdalja do cilja je znotraj tolerance, zamenjamo stanje.
+                        speed_right = 0
+                        speed_left = 0
+                        state = State.LOAD_NEXT_TARGET
+                    elif timer_near_target < 0:
+                        # Smo morda blizu cilja in je varnostna budilka potekla?
+                        speed_right = 0
+                        speed_left = 0
+                        state = State.TURN
+                    else:
+                        u_turn = PID_frwd_turn.update(measurement=target_angle)
+                        # Ker je napaka izračunana kot setpoint - measurement in
+                        # smo nastavili setpoint na 0, bomo v primeru u_base dobili
+                        # negativne vrednosti takrat, ko se bo robot moral premikati
+                        # naprej. Zato dodamo minus pri izračunu hitrosti motorjev.
+                        u_base = PID_frwd_base.update(measurement=target_dist)
+                        # Omejimo nazivno hitrost, ki je enaka za obe kolesi,
+                        # da imamo še manevrski prostor za zavijanje.
+                        u_base = min(max(u_base, -SPEED_BASE_MAX), SPEED_BASE_MAX)
+                        speed_right = -u_base - u_turn
+                        speed_left = -u_base + u_turn
+
+                # Omejimo vrednosti za hitrosti na motorjih.
+                speed_right = round(
+                                min(
+                                    max(speed_right, -SPEED_MAX),
+                                    SPEED_MAX)
+                                )
+                speed_left = round(
+                                min(
+                                    max(speed_left, -SPEED_MAX),
+                                    SPEED_MAX)
+                                )
+                # Izračunane hitrosti zapišemo na motorje.
+                motor_right.run_forever(speed_sp=speed_right)
+                motor_left.run_forever(speed_sp=speed_left)
+
+            else:
+                # Robot bodisi ni viden na kameri bodisi tekma ne teče, 
+                # zato ustavimo motorje.
+                motor_left.stop(stop_action='brake')
+                motor_right.stop(stop_action='brake')
+
+    except KeyboardInterrupt as e:
+        print(f'{e} excepted, bye :)')
+        robot_die()
+        sys.exit(0)
 # Konec programa
 robot_die()
