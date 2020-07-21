@@ -438,12 +438,14 @@ def get_next_diseaset(rp, hives, team_my_tag, HIVE_IGNORE_LIST):
 
 
 def lift_cage(motor_medium):
-    motor_medium.run_timed(time_sp=1500, speed_sp=-800)
+    cage_lifted = True
+    motor_medium.run_timed(time_sp=2000, speed_sp=-800)
     sleep(6)
     
 
 def drop_cage(motor_medium):
-    motor_medium.run_timed(time_sp=1500, speed_sp=800)
+    cage_lifted = False
+    motor_medium.run_timed(time_sp=2000, speed_sp=800)
     sleep(6)
 
 def reverse(motor_left, motor_right):
@@ -512,7 +514,7 @@ print('Robot tekmuje in ima interno oznako "' + team_my_tag + '"')
 print('Izvajam glavno zanko. Prekini jo s pritiskon na tipko DOL.')
 print('Cakam na zacetek tekme ...')
 
-#Sound.speak(SONG_LYRICS)
+Sound.speak(SONG_LYRICS)
 
 # Začetno stanje.
 state = State.IDLE
@@ -585,6 +587,8 @@ speed_left = 0
 # Implementirana je kot vrsta FIFO.
 robot_dir_hist = deque([180.0] * HIST_QUEUE_LENGTH)
 robot_dist_hist = deque([math.inf] * HIST_QUEUE_LENGTH)
+
+cage_lifted = True
 
 # Merimo čas obhoda zanke. Za visoko odzivnost robota je zelo pomembno,
 # da je ta čas čim krajši.
@@ -682,9 +686,11 @@ while do_main_loop and not btn.down:
                 # ce smo nasli panj gremo domov in obratno
                 if collecting:
                     if not reset_target:
-                        lift_cage(motor_medium)
-                        drop_cage(motor_medium)
-                        hives_in_control +=1
+                        if cage_lifted:
+                            drop_cage(motor_medium)
+                        else:
+                            lift_cage(motor_medium)
+                        
 
                     if diseaset:
                         target_idx = 0
@@ -696,7 +702,9 @@ while do_main_loop and not btn.down:
                             hives_in_control =0
                         else:
                             target_idx, target = get_next_healthy(robot_pos, game_state['objects']['hives'], team_my_tag, HIVE_IGNORE_LIST)
-                            HIVE_IGNORE_LIST.append(target_idx)
+                            if target_idx:
+                                HIVE_IGNORE_LIST.append(target_idx)
+                                hives_in_control +=1
                 else:
                     if not reset_target:
                         lift_cage(motor_medium)
