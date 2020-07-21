@@ -490,7 +490,7 @@ MY_HIVE = None
 OP_HIVE = None
 
 HIVE_IGNORE_LIST = []
-MAX_MOVED_FOR = 60
+MAX_MOVED_FOR = 120
 
 # Ali naš robot sploh tekmuje? Če tekmuje, ali je team1 ali team2?
 if ROBOT_ID == game_state['teams']['team1']['id']:
