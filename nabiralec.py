@@ -536,6 +536,7 @@ for robot_data in game_state['objects']['robots'].values():
         robot_pos = Point(robot_data['position'])
 
 def set_initial_target():
+    print("Setting initial target")
     if robot_pos:
         target_idx, target = get_next_healthy(robot_pos, game_state['objects']['hives'], team_my_tag, HIVE_IGNORE_LIST)
         if target == None:
