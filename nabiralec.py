@@ -842,7 +842,7 @@ while do_main_loop and not btn.down:
                 motor_right.stop(stop_action='brake')
 
     except KeyboardInterrupt as e:
-        print(f"{e} excepted, bye :)")
+        print("{} excepted, bye :)".format(e))
         robot_die()
         sys.exit(0)
 # Konec programa
