@@ -1,0 +1,32 @@
+# Najvišja dovoljena hitrost motorjev (teoretično je to 1000).
+SPEED_MAX = 900
+# Najvišja dovoljena nazivna hitrost motorjev pri vožnji naravnost.
+# Naj bo manjša kot SPEED_MAX, da ima robot še možnost zavijati.
+SPEED_BASE_MAX = 800
+
+# Parametri za PID
+# Obračanje na mestu in zavijanje med vožnjo naravnost
+PID_TURN_KP = 1
+PID_TURN_KI = .06
+PID_TURN_KD = 0
+PID_TURN_INT_MAX = 50
+# Nazivna hitrost pri vožnji naravnost.
+PID_STRAIGHT_KP = .3
+PID_STRAIGHT_KI = .2
+PID_STRAIGHT_KD = 0
+PID_STRAIGHT_INT_MAX = 50
+
+# Dolžina FIFO vrste za hranjenje meritev (oddaljenost in kot do cilja).
+HIST_QUEUE_LENGTH = 3
+
+# Razdalje - tolerance
+# Dovoljena napaka v oddaljenosti do cilja [mm].
+DIST_EPS = 170
+# Dovoljena napaka pri obračanju [stopinje].
+DIR_EPS = 10
+# Bližina cilja [mm].
+DIST_NEAR = 100
+# Koliko sekund je robot lahko stanju vožnje naravnost v bližini cilja
+# (oddaljen manj kot DIST_NEAR), preden sprožimo varnostni mehanizem
+# in ga damo v stanje obračanja na mestu.
+TIMER_NEAR_TARGET = 2
