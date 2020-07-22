@@ -59,13 +59,13 @@ SPEED_BASE_MAX = 800
 
 # Parametri za PID
 # Obračanje na mestu in zavijanje med vožnjo naravnost
-PID_TURN_KP = 1
-PID_TURN_KI = .06
+PID_TURN_KP = 1.3
+PID_TURN_KI = .08
 PID_TURN_KD = 0
 PID_TURN_INT_MAX = 50
 # Nazivna hitrost pri vožnji naravnost.
-PID_STRAIGHT_KP = .3
-PID_STRAIGHT_KI = .2
+PID_STRAIGHT_KP = .4
+PID_STRAIGHT_KI = .25
 PID_STRAIGHT_KD = 0
 PID_STRAIGHT_INT_MAX = 50
 
@@ -746,6 +746,7 @@ while do_main_loop and not btn.down:
                                 target_idx = 0
                                 target = robot_pos
                                 collecting = False
+                                robot_die()
                             else:
                                 diseaset = True
                         else:
