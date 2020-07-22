@@ -48,8 +48,8 @@ else:
 
 # Priklop motorjev na izhode.
 MOTOR_LEFT_PORT = 'outD'
-MOTOR_RIGHT_PORT = 'outB    '
-MOTOR_MEDIUM_PORT = 'outC'
+MOTOR_RIGHT_PORT = 'outC    '
+MOTOR_MEDIUM_PORT = 'outB'
 
 # Najvišja dovoljena hitrost motorjev (teoretično je to 1000).
 SPEED_MAX = 900
