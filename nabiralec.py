@@ -445,7 +445,7 @@ def get_next_diseaset(rp, hives, team_my_tag, HIVE_IGNORE_LIST):
 def drop_cage(motor_medium):
     global cage_lifted
     print("Dropping cage: "+str(cage_lifted))
-    if (cage_lifted):
+    if (not cage_lifted):
         return
     cage_lifted = False
     motor_medium.run_timed(time_sp=2500, speed_sp=900)
@@ -455,7 +455,7 @@ def drop_cage(motor_medium):
 def lift_cage(motor_medium):
     global cage_lifted
     print("Lifting cage: "+str(cage_lifted))
-    if (not cage_lifted):
+    if (cage_lifted):
         return
     cage_lifted = True
     motor_medium.run_timed(time_sp=2500, speed_sp=-900)
