@@ -442,21 +442,21 @@ def get_next_diseaset(rp, hives, team_my_tag, HIVE_IGNORE_LIST):
     return best_cost[0], best_cost[-1]
 
 
-def lift_cage(motor_medium):
+def drop_cage(motor_medium):
     global cage_lifted
     if (cage_lifted):
         return
-    cage_lifted = True
-    motor_medium.run_timed(time_sp=2000, speed_sp=-800)
+    cage_lifted = False
+    motor_medium.run_timed(time_sp=2500, speed_sp=-900)
     sleep(4)
     
 
-def drop_cage(motor_medium):
+def lift_cage(motor_medium):
     global cage_lifted
     if (not cage_lifted):
         return
-    cage_lifted = False
-    motor_medium.run_timed(time_sp=2000, speed_sp=800)
+    cage_lifted = True
+    motor_medium.run_timed(time_sp=2500, speed_sp=900)
     sleep(4)
 
 def reverse(motor_left, motor_right):
