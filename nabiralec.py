@@ -74,7 +74,7 @@ HIST_QUEUE_LENGTH = 3
 
 # Razdalje - tolerance
 # Dovoljena napaka v oddaljenosti do cilja [mm].
-DIST_EPS = 170
+DIST_EPS = 250
 # Dovoljena napaka pri obračanju [stopinje].
 DIR_EPS = 10
 # Bližina cilja [mm].
