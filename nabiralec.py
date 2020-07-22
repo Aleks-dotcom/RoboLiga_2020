@@ -395,10 +395,12 @@ def robot_die():
     print('KONEC')
     motor_left.stop(stop_action='brake')
     motor_right.stop(stop_action='brake')
+    """
     Sound.play_song((
         ('D4', 'e'),
         ('C4', 'e'),
         ('A3', 'h')))
+    """
     sys.exit(0)
 
 
@@ -872,6 +874,5 @@ while do_main_loop and not btn.down:
     except KeyboardInterrupt as e:
         print("{} excepted, bye :)".format(e))
         robot_die()
-        sys.exit(0)
 # Konec programa
 robot_die()
