@@ -74,7 +74,7 @@ HIST_QUEUE_LENGTH = 3
 
 # Razdalje - tolerance
 # Dovoljena napaka v oddaljenosti do cilja [mm].
-DIST_EPS = 250
+DIST_EPS = 170
 # Dovoljena napaka pri obračanju [stopinje].
 DIR_EPS = 10
 # Bližina cilja [mm].
@@ -448,7 +448,7 @@ def drop_cage(motor_medium):
     if (not cage_lifted):
         return
     cage_lifted = False
-    motor_medium.run_timed(time_sp=2500, speed_sp=900)
+    motor_medium.run_timed(time_sp=3000, speed_sp=-900)
     sleep(4)
     
 
@@ -458,7 +458,7 @@ def lift_cage(motor_medium):
     if (cage_lifted):
         return
     cage_lifted = True
-    motor_medium.run_timed(time_sp=2500, speed_sp=-900)
+    motor_medium.run_timed(time_sp=3000, speed_sp=900)
     sleep(4)
 
 def reverse(motor_left, motor_right):
@@ -710,6 +710,9 @@ while do_main_loop and not btn.down:
                                 print("found and distance = " + str(DIST_EPS))
                                 if hives_in_control == 1:
                                     drop_cage(motor_medium)
+                                    DIST_EPS = 170
+                                else:
+                                    DIST_EPS = 250
 
                                 if target_idx:
                                     HIVE_IGNORE_LIST.append(target_idx)
