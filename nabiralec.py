@@ -47,8 +47,8 @@ else:
 	sys.exit(0) 
 
 # Priklop motorjev na izhode.
-MOTOR_LEFT_PORT = 'out4'
-MOTOR_RIGHT_PORT = 'out1'
+MOTOR_LEFT_PORT = 'outD'
+MOTOR_RIGHT_PORT = 'outA'
 MOTOR_MEDIUM_PORT = 'outB'
 
 # Najvišja dovoljena hitrost motorjev (teoretično je to 1000).
