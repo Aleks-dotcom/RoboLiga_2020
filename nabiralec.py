@@ -731,6 +731,13 @@ while do_main_loop and not btn.down:
 
                             else:
                                 target_idx, target = get_next_healthy(robot_pos, game_state['objects']['hives'], team_my_tag, HIVE_IGNORE_LIST)
+                                if target is None:
+                                    hives_in_control = 2
+                                    target_idx = 0
+                                    target = MY_HIVE
+                                    drop_cage(motor_medium)
+                                    DIST_EPS = 170
+
                             
                         
                     else:
