@@ -651,7 +651,7 @@ while do_main_loop and not btn.down:
             for robot_data in game_state['objects']['robots'].values():
                 if robot_data['id'] == ROBOT_ID:
                     robot_pos = Point(robot_data['position'])
-                    robot_dir = robot_data['dir'] -180 if  reverse else robot_data['dir']
+                    robot_dir = robot_data['dir'] - math.pi if  reverse else robot_data['dir']
 
             # Ali so podatki o robotu veljavni? Če niso, je zelo verjetno,
             # da sistem ne zazna oznake na robotu.
@@ -873,8 +873,8 @@ while do_main_loop and not btn.down:
                         # da imamo še manevrski prostor za zavijanje.
                         u_base = min(max(u_base, -SPEED_BASE_MAX), SPEED_BASE_MAX)
                         d = -1 if reverse else 1
-                        speed_right = -u_base* d - u_turn 
-                        speed_left = -u_base* d + u_turn
+                        speed_right = (-u_base - u_turn) * d
+                        speed_left = (-u_base + u_turn) * d
 
                 # Omejimo vrednosti za hitrosti na motorjih.
                 speed_right = round(
