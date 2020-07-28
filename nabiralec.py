@@ -635,7 +635,7 @@ while do_main_loop and not btn.down:
             state_changed = False
         state_old = state
 
-        print(state)
+        print(state, reverse)
         # Osveži stanje tekme.
         game_state = conn.request()
         if game_state == -1:
@@ -651,7 +651,7 @@ while do_main_loop and not btn.down:
             for robot_data in game_state['objects']['robots'].values():
                 if robot_data['id'] == ROBOT_ID:
                     robot_pos = Point(robot_data['position'])
-                    robot_dir = robot_data['dir'] if  reverse else robot_data['dir']
+                    robot_dir = robot_data['dir'] + 180 if  reverse else robot_data['dir']
 
             # Ali so podatki o robotu veljavni? Če niso, je zelo verjetno,
             # da sistem ne zazna oznake na robotu.
