@@ -637,7 +637,7 @@ while do_main_loop and not btn.down:
             for robot_data in game_state['objects']['robots'].values():
                 if robot_data['id'] == ROBOT_ID:
                     robot_pos = Point(robot_data['position'])
-                    robot_dir = robot_data['dir']
+                    robot_dir = robot_data['dir'] * -1 if  hives_in_control ==2 else robot_data['dir'] 
             # Ali so podatki o robotu veljavni? Če niso, je zelo verjetno,
             # da sistem ne zazna oznake na robotu.
             robot_alive = (robot_pos is not None) and (robot_dir is not None)
@@ -808,9 +808,8 @@ while do_main_loop and not btn.down:
                         #   V tem primeru bi bolj intuitivno nastavili
                         #   speed_right = u in speed_left = -u.
                         u = PID_turn.update(measurement=target_angle)
-                        speed_right = -u
-                        speed_left = u
-
+                        speed_right = -u if not hives_in_control ==2 else u
+                        speed_left = u if not hives_in_control ==2 else -u
                 elif state == State.DRIVE_STRAIGHT:
                     # Vožnja robota naravnost proti ciljni točki.
                     # Vmes bi radi tudi zavijali, zato uporabimo dva regulatorja.
@@ -879,7 +878,7 @@ while do_main_loop and not btn.down:
                 motor_right.stop(stop_action='brake')
 
     except KeyboardInterrupt as e:
-        print("{} excepted, bye :)".format(e))
+        print('bye :)')
         robot_die()
 # Konec programa
 robot_die()
