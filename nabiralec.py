@@ -873,8 +873,8 @@ while do_main_loop and not btn.down:
                         # da imamo še manevrski prostor za zavijanje.
                         u_base = min(max(u_base, -SPEED_BASE_MAX), SPEED_BASE_MAX)
                         d = -1 if reverse else 1
-                        speed_right = -u_base - u_turn * d
-                        speed_left = -u_base + u_turn * d
+                        speed_right = -u_base* d - u_turn 
+                        speed_left = -u_base* d + u_turn
 
                 # Omejimo vrednosti za hitrosti na motorjih.
                 speed_right = round(
