@@ -521,13 +521,13 @@ MAX_MOVED_FOR = 120
 if ROBOT_ID == game_state['teams']['team1']['id']:
     team_my_tag = 'team1'
     team_op_tag = 'team2'
-    MY_HIVE = Point({"x": 250, "y": 762})
+    MY_HIVE = Point({"x": 100, "y": 762})
     OP_HIVE = Point({"x": 3254, "y": 762})
 elif ROBOT_ID == game_state['teams']['team2']['id']:
     team_my_tag = 'team2'
     team_op_tag = 'team1'
     MY_HIVE = Point({"x": 3254, "y": 762})
-    OP_HIVE = Point({"x": 250, "y": 762})
+    OP_HIVE = Point({"x": 100, "y": 762})
 else:
     print('Robot ne tekmuje.')
     robot_die()
