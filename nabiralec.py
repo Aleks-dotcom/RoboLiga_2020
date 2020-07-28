@@ -465,8 +465,13 @@ def lift_cage(motor_medium):
     sleep(4)
 
 def reverse_robot(motor_left, motor_right):
-    motor_left.run_timed(time_sp=1000, speed_sp=-450)
-    motor_right.run_timed(time_sp=1000, speed_sp=-450)
+    global reverse
+    if reverse:
+        motor_left.run_timed(time_sp=1000, speed_sp=450)
+        motor_right.run_timed(time_sp=1000, speed_sp=450)
+    else:
+        motor_left.run_timed(time_sp=1000, speed_sp=-450)
+        motor_right.run_timed(time_sp=1000, speed_sp=-450)
     sleep(2)
 
 # -----------------------------------------------------------------------------
