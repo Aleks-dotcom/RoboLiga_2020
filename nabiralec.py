@@ -40,10 +40,14 @@ ROBOT_ID = 33
 SERVER_IP = "192.168.2.3/game/"
 # Datoteka na igralnem strežniku s podatki o tekmi.
 
-if len(sys.argv) > 1:
+kletka = ""
+if len(sys.argv) > 2:
 	GAME_ID = sys.argv[1]
+    kletka = sys.argv[2]
+
+
 else:
-	print('You didnt provid a game id...\n[Usage] python3 nabiralec.py <game_id>')
+	print('You didnt provid a game id and kletka...\n[Usage] python3 nabiralec.py <game_id> <kletka>')
 	sys.exit(0) 
 
 # Priklop motorjev na izhode.
@@ -481,6 +485,14 @@ motor_left = init_large_motor(MOTOR_LEFT_PORT)
 motor_right = init_large_motor(MOTOR_RIGHT_PORT)
 motor_medium = init_medium_motor(MOTOR_MEDIUM_PORT)
 print('OK!')
+
+if "DVIGNI" in kletka:
+    lift_cage()
+elif "SPUSTI" in kletka:
+    drop_cage()
+else:
+    pass
+
 
 # Nastavimo povezavo s strežnikom.
 url = SERVER_IP + GAME_ID
