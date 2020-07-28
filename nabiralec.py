@@ -824,8 +824,8 @@ while do_main_loop and not btn.down:
                         #   V tem primeru bi bolj intuitivno nastavili
                         #   speed_right = u in speed_left = -u.
                         u = PID_turn.update(measurement=target_angle)
-                        speed_right = -u if not reverse else u
-                        speed_left = u if not reverse else -u
+                        speed_right = -u
+                        speed_left = u 
                 elif state == State.DRIVE_STRAIGHT:
                     # Vožnja robota naravnost proti ciljni točki.
                     # Vmes bi radi tudi zavijali, zato uporabimo dva regulatorja.
