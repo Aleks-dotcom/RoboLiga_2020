@@ -635,7 +635,7 @@ while do_main_loop and not btn.down:
             state_changed = False
         state_old = state
 
-        # print(state)
+        print(state)
         # Osveži stanje tekme.
         game_state = conn.request()
         if game_state == -1:
