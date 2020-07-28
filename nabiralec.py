@@ -485,9 +485,9 @@ motor_medium = init_medium_motor(MOTOR_MEDIUM_PORT)
 print('OK!')
 
 if "DVIGNI" in kletka:
-    lift_cage()
+    lift_cage(motor_medium)
 elif "SPUSTI" in kletka:
-    drop_cage()
+    drop_cage(motor_medium)
 else:
     pass
 
