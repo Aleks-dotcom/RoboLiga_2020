@@ -607,7 +607,7 @@ found = False
 # Merimo čas obhoda zanke. Za visoko odzivnost robota je zelo pomembno,
 # da je ta čas čim krajši.
 t_old = time()
-
+reverse = False
 do_main_loop = True
 while do_main_loop and not btn.down:
     try:
@@ -637,7 +637,8 @@ while do_main_loop and not btn.down:
             for robot_data in game_state['objects']['robots'].values():
                 if robot_data['id'] == ROBOT_ID:
                     robot_pos = Point(robot_data['position'])
-                    robot_dir = robot_data['dir'] * -1 if  hives_in_control ==2 else robot_data['dir'] 
+                    robot_dir = robot_data['dir'] * -1 if  reverse else robot_data['dir']
+
             # Ali so podatki o robotu veljavni? Če niso, je zelo verjetno,
             # da sistem ne zazna oznake na robotu.
             robot_alive = (robot_pos is not None) and (robot_dir is not None)
@@ -693,6 +694,7 @@ while do_main_loop and not btn.down:
                     else:
                         state = State.LOAD_NEXT_TARGET
                         found = True
+                        reverse = False
 
 
                 elif state == State.LOAD_NEXT_TARGET:
@@ -728,6 +730,7 @@ while do_main_loop and not btn.down:
                             if hives_in_control == 2:
                                 target_idx = 0
                                 target = MY_HIVE
+                                reverse = True
 
                             else:
                                 target_idx, target = get_next_healthy(robot_pos, game_state['objects']['hives'], team_my_tag, HIVE_IGNORE_LIST)
@@ -808,8 +811,8 @@ while do_main_loop and not btn.down:
                         #   V tem primeru bi bolj intuitivno nastavili
                         #   speed_right = u in speed_left = -u.
                         u = PID_turn.update(measurement=target_angle)
-                        speed_right = -u if not hives_in_control ==2 else u
-                        speed_left = u if not hives_in_control ==2 else -u
+                        speed_right = -u if not reverse else u
+                        speed_left = u if not reverse else -u
                 elif state == State.DRIVE_STRAIGHT:
                     # Vožnja robota naravnost proti ciljni točki.
                     # Vmes bi radi tudi zavijali, zato uporabimo dva regulatorja.
