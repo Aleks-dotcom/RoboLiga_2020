@@ -763,6 +763,7 @@ while do_main_loop and not btn.down:
                             lift_cage(motor_medium)
                             reverse_robot(motor_left, motor_right)
                             collecting = True
+                            reverse = False
                             HIVE_IGNORE_LIST = []
 
                         target_idx, target = get_next_healthy(robot_pos, game_state['objects']['hives'], team_my_tag, HIVE_IGNORE_LIST)
