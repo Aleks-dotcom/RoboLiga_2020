@@ -42,10 +42,8 @@ SERVER_IP = "192.168.2.3/game/"
 
 kletka = ""
 if len(sys.argv) > 2:
-	GAME_ID = sys.argv[1]
-    kletka = sys.argv[2]
-
-
+    GAME_ID = sys.argv[1]
+    kletka = str(sys.argv[2])
 else:
 	print('You didnt provid a game id and kletka...\n[Usage] python3 nabiralec.py <game_id> <kletka>')
 	sys.exit(0) 
