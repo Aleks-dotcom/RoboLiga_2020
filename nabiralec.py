@@ -791,7 +791,6 @@ while do_main_loop and not btn.down:
                         # Če smo ravno prišli v to stanje, najprej ponastavimo PID.
                         PID_turn.reset()
 
-                    print(target_angle, robot_dir)
                     # Ali smo že dosegli ciljni kot?
                     # Zadnjih nekaj obhodov zanke mora biti absolutna vrednost
                     # napake kota manjša od DIR_EPS.
