@@ -412,7 +412,7 @@ def use_double_kibla(hives, curent_hive, HIVE_IGNORE_LIST):
         if len(hives) > 1:
             return 1
     else: 
-        return 0
+        return 0    
 """
 def get_next_healthy(rp, hives, team_my_tag, HIVE_IGNORE_LIST):
     best_cost = (0, 99999, None)
