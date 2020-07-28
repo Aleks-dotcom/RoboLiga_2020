@@ -44,6 +44,7 @@ kletka = ""
 if len(sys.argv) > 2:
     GAME_ID = sys.argv[1]
     kletka = str(sys.argv[2])
+    print('kletka: {}\ngame_id: {}'.format(GAME_ID,kletka))
 else:
 	print('You didnt provid a game id and kletka...\n[Usage] python3 nabiralec.py <game_id> <kletka>')
 	sys.exit(0) 
@@ -485,8 +486,10 @@ motor_medium = init_medium_motor(MOTOR_MEDIUM_PORT)
 print('OK!')
 
 if "DVIGNI" in kletka:
+    cage_lifted = False
     lift_cage(motor_medium)
 elif "SPUSTI" in kletka:
+    cage_lifted = True
     drop_cage(motor_medium)
 else:
     pass
