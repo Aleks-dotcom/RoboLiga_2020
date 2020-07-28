@@ -464,7 +464,7 @@ def lift_cage(motor_medium):
     motor_medium.run_timed(time_sp=3000, speed_sp=900)
     sleep(4)
 
-def reverse(motor_left, motor_right):
+def reverse_robot(motor_left, motor_right):
     motor_left.run_timed(time_sp=1000, speed_sp=-450)
     motor_right.run_timed(time_sp=1000, speed_sp=-450)
     sleep(2)
@@ -753,13 +753,14 @@ while do_main_loop and not btn.down:
                                     target = MY_HIVE
                                     drop_cage(motor_medium)
                                     DIST_EPS = 170
+                                    reverse = True
 
                             
                         
                     else:
                         if not reset_target:
                             lift_cage(motor_medium)
-                            reverse(motor_left, motor_right)
+                            reverse_robot(motor_left, motor_right)
                             collecting = True
                             HIVE_IGNORE_LIST = []
 
