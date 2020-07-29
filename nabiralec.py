@@ -739,13 +739,9 @@ while do_main_loop and not btn.down:
                             if found:
                                 drop_cage(motor_medium)
                                 print("found and distance = " + str(DIST_EPS))
-                                if hives_in_control == 1:
-                                    DIST_EPS = 170
-                                    bogatenje = False
-                                else:
-                                    hives_in_control = 1
-                                    bogatenje = not bogatenje
-                                    
+                                hives_in_control = 1
+                                DIST_EPS = 170
+                                bogatenje = False                                    
 
                                 if target_idx:
                                     HIVE_IGNORE_LIST.append(target_idx)
