@@ -530,13 +530,13 @@ if ROBOT_ID == game_state['teams']['team1']['id']:
     team_op_tag = 'team2'
     MY_HIVE = Point({"x": 100, "y": 1000})
     OP_HIVE = Point({"x": 3400, "y": 1000})
-    RICH_LINE = 2526
+    RICH_LINE = 2600
 elif ROBOT_ID == game_state['teams']['team2']['id']:
     team_my_tag = 'team2'
     team_op_tag = 'team1'
     MY_HIVE = Point({"x": 3400, "y": 1000})
     OP_HIVE = Point({"x": 100, "y": 1000})
-    RICH_LINE = 1010
+    RICH_LINE = 900
 else:
     print('Robot ne tekmuje.')
     robot_die()
