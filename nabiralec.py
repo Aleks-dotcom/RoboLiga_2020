@@ -751,8 +751,10 @@ while do_main_loop and not btn.down:
                                 found = False
 
                         if diseaset:
-                            target_idx = 0
+                            #target_idx = 0
                             target = OP_HIVE
+                            bogatenje = False
+
 
                         else:
 
@@ -775,6 +777,12 @@ while do_main_loop and not btn.down:
                         if not reset_target:
                             HIVE_IGNORE_LIST.clear()
                             lift_cage(motor_medium)
+
+                            if diseaset:
+                                reverse_robot(motor_left, motor_right)
+                                diseaset = False
+                                HIVE_IGNORE_LIST.append(target_idx)
+
                             reverse = False
                             state = State.IDLE
                             reset_target = True
