@@ -777,19 +777,20 @@ while do_main_loop and not btn.down:
                                         reverse = True
                                     else:
                                         target = Point({"x": RICH_LINE, "y": robot_pos.y})
-                                        if robot_pos.x > target.x:
+                                        if robot_pos["x"] > target["x"]:
                                             bogatenje = False
                                             hives_in_control = 2
                                             target = MY_HIVE
                                             reverse = True
-                                            
+                                        else:
+                                            bogatenje = False
                             
                         
                     else:
                         if not reset_target:
+                            HIVE_IGNORE_LIST.clear()
                             lift_cage(motor_medium)
                             reverse = False
-                            HIVE_IGNORE_LIST = []
                             state = State.IDLE
                             reset_target = True
                             continue
