@@ -727,7 +727,7 @@ while do_main_loop and not btn.down:
 
                 elif state == State.LOAD_NEXT_TARGET:
 
-                    print("distance = " + str(DIST_EPS) + " hives="+str(hives_in_control) + "reset = " + str(reset_target)+ " collecting = " + str(collecting) + "bog=" str(bogatenje))
+                    print("distance = " + str(DIST_EPS) + " hives="+str(hives_in_control) + "reset = " + str(reset_target)+ " collecting = " + str(collecting) + "bog="+ str(bogatenje))
                     if reset_target:
                         print("Reset9jg")
                         #collecting = True
