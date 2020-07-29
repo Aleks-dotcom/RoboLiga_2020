@@ -730,7 +730,7 @@ while do_main_loop and not btn.down:
                     print("distance = " + str(DIST_EPS) + " hives="+str(hives_in_control) + "reset = " + str(reset_target)+ " collecting = " + str(collecting) + "bog="+ str(bogatenje))
                     if reset_target:
                         print("Reset9jg")
-                        #collecting = True
+                        collecting = False
                         lift_cage(motor_medium)
 
                     # ce smo nasli panj gremo domov in obratno
