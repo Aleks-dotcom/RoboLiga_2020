@@ -765,6 +765,7 @@ while do_main_loop and not btn.down:
                                     target = MY_HIVE
                                     reverse = True
                                 else:
+                                    target_idx = 0
                                     target = Point({"x": RICH_LINE, "y": robot_pos.y})
                                     if robot_pos.x > target.x:
                                         bogatenje = False
