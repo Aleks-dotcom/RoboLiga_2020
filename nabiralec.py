@@ -452,7 +452,7 @@ def drop_cage(motor_medium):
         return
     cage_lifted = False
     motor_medium.run_timed(time_sp=2000, speed_sp=-900)
-    sleep(4)
+    sleep(2)
     
 
 def lift_cage(motor_medium):
@@ -462,7 +462,7 @@ def lift_cage(motor_medium):
         return
     cage_lifted = True
     motor_medium.run_timed(time_sp=2000, speed_sp=900)
-    sleep(4)
+    sleep(2)
 
 def reverse_robot(motor_left, motor_right):
     global reverse
@@ -721,7 +721,7 @@ while do_main_loop and not btn.down:
                     print("distance = " + str(DIST_EPS) + " hives="+str(hives_in_control))
                     if reset_target:
                         print("Reset9jg")
-                        collecting = True
+                        #collecting = True
                         lift_cage(motor_medium)
 
                     # ce smo nasli panj gremo domov in obratno
@@ -771,6 +771,7 @@ while do_main_loop and not btn.down:
                             reverse = False
                             HIVE_IGNORE_LIST = []
                             state = State.IDLE
+                            reset_target = True
                             continue
 
                         target_idx, target = get_next_healthy(robot_pos, game_state['objects']['hives'], team_my_tag, HIVE_IGNORE_LIST)
