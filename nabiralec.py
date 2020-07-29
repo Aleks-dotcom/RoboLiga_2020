@@ -742,11 +742,7 @@ while do_main_loop and not btn.down:
                                 hives_in_control = 1
                                 DIST_EPS = 170
 
-                                if bogatenje:
-                                    bogatenje = False
-                                    target = MY_HIVE
-                                    reverse = True 
-                                    hives_in_control = 2                    
+                                bogatenje = not bogatenje                
 
                                 if target_idx:
                                     HIVE_IGNORE_LIST.append(target_idx)
@@ -760,8 +756,8 @@ while do_main_loop and not btn.down:
 
                         else:
 
-                            if hives_in_control >= 1:
-                                if bogatenje:
+                            if hives_in_control == 1:
+                                if not bogatenje:
                                     target_idx = 0
                                     target = MY_HIVE
                                     reverse = True
@@ -771,31 +767,9 @@ while do_main_loop and not btn.down:
                                     bogatenje = True
                                     if robot_pos.x > target.x:
                                         bogatenje = False
-                                        hives_in_control = 2
+                                        hives_in_control = 1
                                         target = MY_HIVE
                                         reverse = True
-
-
-                            else:
-                                target_idx, target = get_next_healthy(robot_pos, game_state['objects']['hives'], team_my_tag, HIVE_IGNORE_LIST)
-                                if target is None:
-                                    target_idx = 0
-                                    drop_cage(motor_medium)
-                                    DIST_EPS = 170
-                                    if not bogatenje:
-                                        hives_in_control = 2
-                                        target = MY_HIVE
-                                        reverse = True
-                                    else:
-                                        target = Point({"x": RICH_LINE, "y": robot_pos.y})
-                                        if robot_pos.x > target.x:
-                                            bogatenje = False
-                                            hives_in_control = 2
-                                            target = MY_HIVE
-                                            reverse = True
-                                        else:
-                                            bogatenje = False
-                            
                         
                     else:
                         if not reset_target:
@@ -820,7 +794,7 @@ while do_main_loop and not btn.down:
 
                         collecting = True
 
-                    if (hives_in_control >= 2):
+                    if (hives_in_control == 1 and not bogatenje):
                         hives_in_control = 0
                         collecting = False
 
