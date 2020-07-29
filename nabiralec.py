@@ -741,6 +741,7 @@ while do_main_loop and not btn.down:
                                 if hives_in_control == 1:
                                     drop_cage(motor_medium)
                                     DIST_EPS = 170
+                                    bogatenje = False
                                 else:
                                     if bogatenje:
                                         hives_in_control = 1
