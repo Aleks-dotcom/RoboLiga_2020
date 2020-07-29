@@ -776,7 +776,7 @@ while do_main_loop and not btn.down:
                                         target = MY_HIVE
                                         reverse = True
                                     else:
-                                        target = Point(RICH_LINE, robot_pos.y)
+                                        target = Point({"x": RICH_LINE, "y": robot_pos.y})
                                         if robot_pos.x > target.x:
                                             bogatenje = False
                                             hives_in_control = 2
