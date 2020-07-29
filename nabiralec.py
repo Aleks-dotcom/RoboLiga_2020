@@ -575,8 +575,10 @@ if robot_pos:
             target = robot_pos
             collecting = False
         else:
+            reset_target = False
             diseaset = True
     else:
+        reset_target = False
         diseaset = False
 
 
