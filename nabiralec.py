@@ -553,14 +553,14 @@ state = State.IDLE
 state_old = -1
 # Indeks trenutne ciljne lokacije.
 target_idx = 0
-collecting = True
+collecting = False
 diseaset = False
 
 # Izberi cilj
 robot_pos = None
 target = None
 target_moved_for = 0
-reset_target = False
+reset_target = True
 
 for robot_data in game_state['objects']['robots'].values():
     if robot_data['id'] == ROBOT_ID:
@@ -721,7 +721,7 @@ while do_main_loop and not btn.down:
                     print("distance = " + str(DIST_EPS) + " hives="+str(hives_in_control))
                     if reset_target:
                         print("Reset9jg")
-                        collecting = True
+                        #collecting = True
                         lift_cage(motor_medium)
 
                     # ce smo nasli panj gremo domov in obratno
