@@ -519,6 +519,8 @@ game_state = conn.request()
 MY_HIVE = None
 OP_HIVE = None
 
+RICH_LINE = None
+
 HIVE_IGNORE_LIST = []
 MAX_MOVED_FOR = 120
 
@@ -528,11 +530,13 @@ if ROBOT_ID == game_state['teams']['team1']['id']:
     team_op_tag = 'team2'
     MY_HIVE = Point({"x": 100, "y": 1000})
     OP_HIVE = Point({"x": 3400, "y": 1000})
+    RICH_LINE = 2526
 elif ROBOT_ID == game_state['teams']['team2']['id']:
     team_my_tag = 'team2'
     team_op_tag = 'team1'
     MY_HIVE = Point({"x": 3400, "y": 1000})
     OP_HIVE = Point({"x": 100, "y": 1000})
+    RICH_LINE = 1010
 else:
     print('Robot ne tekmuje.')
     robot_die()
@@ -625,6 +629,7 @@ robot_dist_hist = deque([math.inf] * HIST_QUEUE_LENGTH)
 
 initial_set = False
 found = False
+bogatenje = False
 
 # Merimo čas obhoda zanke. Za visoko odzivnost robota je zelo pomembno,
 # da je ta čas čim krajši.
@@ -737,7 +742,11 @@ while do_main_loop and not btn.down:
                                     drop_cage(motor_medium)
                                     DIST_EPS = 170
                                 else:
-                                    DIST_EPS = 250
+                                    if bogatenje:
+                                        hives_in_control = 2
+                                        bogatenje = False
+                                    else:
+                                        bogatenje = True
 
                                 if target_idx:
                                     HIVE_IGNORE_LIST.append(target_idx)
@@ -748,6 +757,7 @@ while do_main_loop and not btn.down:
                         if diseaset:
                             target_idx = 0
                             target = OP_HIVE
+
                         else:
 
                             if hives_in_control == 2:
@@ -758,13 +768,21 @@ while do_main_loop and not btn.down:
                             else:
                                 target_idx, target = get_next_healthy(robot_pos, game_state['objects']['hives'], team_my_tag, HIVE_IGNORE_LIST)
                                 if target is None:
-                                    hives_in_control = 2
                                     target_idx = 0
-                                    target = MY_HIVE
                                     drop_cage(motor_medium)
                                     DIST_EPS = 170
-                                    reverse = True
-
+                                    if not bogatenje:
+                                        hives_in_control = 2
+                                        target = MY_HIVE
+                                        reverse = True
+                                    else:
+                                        target = Point(RICH_LINE, robot_pos.y)
+                                        if robot_pos.x > target.x:
+                                            bogatenje = False
+                                            hives_in_control = 2
+                                            target = MY_HIVE
+                                            reverse = True
+                                            
                             
                         
                     else:
