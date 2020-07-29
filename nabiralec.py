@@ -767,6 +767,7 @@ while do_main_loop and not btn.down:
                                 else:
                                     target_idx = 0
                                     target = Point({"x": RICH_LINE, "y": robot_pos.y})
+                                    bogatenje = True
                                     if robot_pos.x > target.x:
                                         bogatenje = False
                                         hives_in_control = 2
