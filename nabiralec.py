@@ -740,10 +740,11 @@ while do_main_loop and not btn.down:
                                 print("found and distance = " + str(DIST_EPS))
                                 if hives_in_control == 1:
                                     drop_cage(motor_medium)
+                                    bogatenje = True
                                     DIST_EPS = 170
                                 else:
                                     if bogatenje:
-                                        hives_in_control = 2
+                                        hives_in_control = 1
                                         bogatenje = False
                                     else:
                                         bogatenje = True
