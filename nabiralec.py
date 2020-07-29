@@ -451,7 +451,7 @@ def drop_cage(motor_medium):
     if (not cage_lifted):
         return
     cage_lifted = False
-    motor_medium.run_timed(time_sp=3000, speed_sp=-900)
+    motor_medium.run_timed(time_sp=2000, speed_sp=-900)
     sleep(4)
     
 
@@ -461,7 +461,7 @@ def lift_cage(motor_medium):
     if (cage_lifted):
         return
     cage_lifted = True
-    motor_medium.run_timed(time_sp=3000, speed_sp=900)
+    motor_medium.run_timed(time_sp=2000, speed_sp=900)
     sleep(4)
 
 def reverse_robot(motor_left, motor_right):
