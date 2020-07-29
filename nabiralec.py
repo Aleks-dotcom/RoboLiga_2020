@@ -577,9 +577,11 @@ if robot_pos:
         else:
             reset_target = False
             diseaset = True
+            collecting = True
     else:
         reset_target = False
         diseaset = False
+        collecting = True
 
 
 # Regulator PID za obračanje na mestu.
@@ -780,12 +782,13 @@ while do_main_loop and not btn.down:
                             if target == None:
                                 target_idx = 0
                                 target = robot_pos
-                                collecting = False
                                 robot_die()
                             else:
                                 diseaset = True
                         else:
                             diseaset = False
+
+                        collecting = True
 
                     if (hives_in_control >= 2):
                         hives_in_control = 0
