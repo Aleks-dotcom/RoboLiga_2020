@@ -743,11 +743,9 @@ while do_main_loop and not btn.down:
                                     DIST_EPS = 170
                                     bogatenje = False
                                 else:
-                                    if bogatenje:
-                                        hives_in_control = 1
-                                        bogatenje = False
-                                    else:
-                                        bogatenje = True
+                                    hives_in_control = 1
+                                    bogatenje = not bogatenje
+                                    
 
                                 if target_idx:
                                     HIVE_IGNORE_LIST.append(target_idx)
