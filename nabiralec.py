@@ -751,7 +751,7 @@ while do_main_loop and not btn.down:
                                 found = False
 
                         if diseaset:
-                            #target_idx = 0
+                            target_idx = 0
                             target = OP_HIVE
                             bogatenje = False
 
@@ -760,11 +760,11 @@ while do_main_loop and not btn.down:
 
                             if hives_in_control == 1:
                                 if not bogatenje:
-                                    #target_idx = 0
+                                    target_idx = 0
                                     target = MY_HIVE
                                     reverse = True
                                 else:
-                                    #target_idx = 0
+                                    target_idx = 0
                                     target = Point({"x": RICH_LINE, "y": robot_pos.y})
                                     bogatenje = True
                                     if robot_pos.x > target.x:
@@ -782,11 +782,12 @@ while do_main_loop and not btn.down:
                                 reverse_robot(motor_left, motor_right)
                                 diseaset = False
 
-                            HIVE_IGNORE_LIST.append(target_idx)
+                            HIVE_IGNORE_LIST.append(last_valid_target_idx)
                             reverse = False
                             state = State.IDLE
                             reset_target = True
                             target_idx = 0
+                            last_valid_target_idx = 0
                             continue
 
                         target_idx, target = get_next_healthy(robot_pos, game_state['objects']['hives'], team_my_tag, HIVE_IGNORE_LIST)
@@ -801,6 +802,7 @@ while do_main_loop and not btn.down:
                         else:
                             diseaset = False
 
+                        last_valid_target_idx = target_idx
                         collecting = True
 
                     if (hives_in_control == 1 and not bogatenje):
