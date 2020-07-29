@@ -721,7 +721,7 @@ while do_main_loop and not btn.down:
                     print("distance = " + str(DIST_EPS) + " hives="+str(hives_in_control))
                     if reset_target:
                         print("Reset9jg")
-                        #collecting = True
+                        collecting = True
                         lift_cage(motor_medium)
 
                     # ce smo nasli panj gremo domov in obratno
@@ -766,8 +766,6 @@ while do_main_loop and not btn.down:
                     else:
                         if not reset_target:
                             lift_cage(motor_medium)
-                            #reverse_robot(motor_left, motor_right)
-                            collecting = True
                             reverse = False
                             HIVE_IGNORE_LIST = []
                             state = State.IDLE
