@@ -378,7 +378,7 @@ class Grid():
                 self.chunks[x][y] = Chunk(self.x_size, self.y_size, x, y, node_amount)
 
     
-    def __str__(self)
+    def __str__(self):
         res = ""
         for x in range(self.x_amount):
             for y in range(self.y_amount):
