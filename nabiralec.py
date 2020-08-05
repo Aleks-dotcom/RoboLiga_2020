@@ -322,9 +322,9 @@ class Node():
         
         dist = 1000
         for id, hive in game_state['objects']['hives'].items():
-            if data["type"] == "HIVE_DISEASED":
+            if hive["type"] == "HIVE_DISEASED":
 
-                hp = Point(data["position"])
+                hp = Point(hive["position"])
                 dist = get_distance(self.point, hp)
 
         self.free = dist > 200
