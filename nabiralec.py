@@ -321,8 +321,8 @@ class Chunk():
 class Grid():
     # grid_size => lines on x and y axis    
     def __init__(self, grid_size, node_amount):
-        self.x_size = 3500 / grid_size["x"]
-        self.y_size = 2000 / grid_size["y"]
+        self.x_size = int(3500 / grid_size["x"])
+        self.y_size = int(2000 / grid_size["y"])
 
         #self.total_chunks = grid_size["x"] * grid_size["y"]
         self.chunks = []
