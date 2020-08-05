@@ -298,10 +298,11 @@ class Point():
     Točka na poligonu.
     """
 
-    def __init__(self, position):
+    def __init__(self, position, chunk_id=False):
         self.x = position['x']
         self.y = position['y']
-        print('('+str(self.x)+', '+str(self.y)+')')
+        if (chunk_id):
+            print('('+str(self.x)+', '+str(self.y)+')   chunk ID: x='+str(chunk_id["x"])+ " y="+ str(chunk_id["y"]))
 
     def __str__(self):
         return '('+str(self.x)+', '+str(self.y)+')'
@@ -321,15 +322,18 @@ class Chunk():
 class Grid():
     # grid_size => lines on x and y axis    
     def __init__(self, grid_size, node_amount):
-        self.x_size = int(3500 / grid_size["x"])
-        self.y_size = int(2000 / grid_size["y"])
+        self.x_amount = grid_size["x"]
+        self.y_amount = grid_size["y"]
+
+        self.x_size = int(3500 / self.x_amount)
+        self.y_size = int(2000 / self.y_amount)
 
         #self.total_chunks = grid_size["x"] * grid_size["y"]
-        self.chunks = [self.x_size]
+        self.chunks = [self.x_amount]
 
-        for x in range(self.x_size):
-            self.chunks[x] = [self.y_size]
-            for y in range(self.y_size):
+        for x in range(self.x_amount):
+            self.chunks[x] = [self.y_amount]
+            for y in range(self.y_amount):
                 self.chunks[x][y] = Chunk(self.x_size, self.y_size, x, y, node_amount)
 
     
