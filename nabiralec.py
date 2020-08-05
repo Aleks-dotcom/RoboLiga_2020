@@ -298,28 +298,66 @@ class Point():
     Točka na poligonu.
     """
 
-    def __init__(self, position, chunk_id=False):
+    def __init__(self, position):
         self.x = position['x']
         self.y = position['y']
-        if (chunk_id):
-            print('('+str(self.x)+', '+str(self.y)+')   chunk ID: x='+str(chunk_id["x"])+ " y="+ str(chunk_id["y"]))
-
+        
     def __str__(self):
         return '('+str(self.x)+', '+str(self.y)+')'
+
+
+class Node():
+
+    def __init__(self, position):
+        self.point = Point(position)
+        self.free = True
+
+    def __str__(self):
+        return "pos: {}, free: {}".format(str(self.point), str(self.free))
+
+    def update_node(self):
+        global game_state
+        if not game_state or game_state == -1:
+            return
+        
+        dist = 1000
+        for id, hive in game_state['objects']['hives'].items():
+            if data["type"] == "HIVE_DISEASED":
+
+                hp = Point(data["position"])
+                dist = get_distance(self.point, hp)
+
+        self.free = dist > 100
+
 
 
 class Chunk():
     def __init__(self, size_x, size_y, offset_x, offset_y, node_amount):
         self.node_sqrt = math.floor(math.sqrt(node_amount))
         self.node_size = int(size_x / self.node_sqrt)
+        self.offset_x = offset_x
+        self.offset_y = offset_y
         
         self.nodes = [None] * self.node_sqrt
 
         for x in range(self.node_sqrt):
             self.nodes[x] = [None] * self.node_sqrt
             for y in range(self.node_sqrt):
-                self.nodes[x][y] = Point({"x": offset_x * size_x + self.node_size*x, "y": offset_y * size_y + self.node_size*y}, {"x": offset_x, "y": offset_y})
+                self.nodes[x][y] = {"x": offset_x * size_x + self.node_size*x, "y": offset_y * size_y + self.node_size*y}, {"x": offset_x, "y": offset_y}
 
+    def __str__(self):
+        res = ""
+        for x in range(self.node_sqrt):
+            for y in range(self.node_sqrt):
+                res += "\t id:" + str(self.offset_x) + str(self.offset_y) + str(self.nodes[x][y]) + "\n"
+        
+        return res
+
+
+    def update_chunk(self):
+        for x in range(self.node_sqrt):
+            for y in range(self.node_sqrt):
+                self.nodes[x][y].update_node()
 
 
 class Grid():
@@ -340,11 +378,13 @@ class Grid():
                 self.chunks[x][y] = Chunk(self.x_size, self.y_size, x, y, node_amount)
 
     
+    def __str__(self)
+        res = ""
+        for x in range(self.x_amount):
+            for y in range(self.y_amount):
+                res += str(self.chunks[x][y]) + "\n"
 
-
-
-
-
+        return res
 
 
 def get_angle(p1, a1, p2) -> float:
@@ -680,6 +720,7 @@ reverse = False
 do_main_loop = True
 
 grid = Grid({"x": 7, "y": 4}, 25)
+print(str(grind))
 
 while do_main_loop and not btn.down:
     try:
