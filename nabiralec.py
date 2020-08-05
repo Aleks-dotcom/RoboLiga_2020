@@ -309,7 +309,7 @@ class Point():
 
 class Chunk():
     def __init__(self, size_x, size_y, offset_x, offset_y, node_amount):
-        self.node_sqrt = int(math.sqrt(node_amount))
+        self.node_sqrt = math.floor(math.sqrt(node_amount))
         self.nodes = []
         for x in range(self.node_sqrt):
             self.nodes[x] = []
