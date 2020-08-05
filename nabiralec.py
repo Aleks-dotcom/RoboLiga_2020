@@ -311,9 +311,9 @@ class Chunk():
     def __init__(self, size_x, size_y, offset_x, offset_y, node_amount):
         self.node_sqrt = math.floor(math.sqrt(node_amount))
         self.nodes = [self.node_sqrt]
-        for x in range(self.node_sqrt):
+        for x in range(len(self.nodes)):
             self.nodes[x] = [self.node_sqrt]
-            for y in range(self.node_sqrt):
+            for y in range(len(self.nodes)):
                 self.nodes[x][y] = Point({"x": offset_x * size_x, "y": offset_y * size_y})
 
 
