@@ -720,7 +720,7 @@ reverse = False
 do_main_loop = True
 
 grid = Grid({"x": 7, "y": 4}, 25)
-print(str(grind))
+print(str(grid))
 
 while do_main_loop and not btn.down:
     try:
