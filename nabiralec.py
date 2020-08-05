@@ -327,7 +327,7 @@ class Node():
                 hp = Point(data["position"])
                 dist = get_distance(self.point, hp)
 
-        self.free = dist > 100
+        self.free = dist > 200
 
 
 
