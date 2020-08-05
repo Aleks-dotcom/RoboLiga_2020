@@ -301,9 +301,43 @@ class Point():
     def __init__(self, position):
         self.x = position['x']
         self.y = position['y']
+        print('('+str(self.x)+', '+str(self.y)+')')
 
     def __str__(self):
         return '('+str(self.x)+', '+str(self.y)+')'
+
+
+class Chunk():
+    def __init__(self, size_x, size_y, offset_x, offset_y, node_amount):
+        self.node_sqrt = int(math.sqrt(node_amount))
+        self.nodes = []
+        for x in range(self.node_sqrt):
+            self.nodes[x] = []
+            for y in range(self.node_sqrt):
+                self.nodes[x][y] = Point({"x": offset_x * size_x, "y": offset_y * size_y})
+
+
+
+class Grid():
+    # grid_size => lines on x and y axis    
+    def __init__(self, grid_size, node_amount):
+        self.x_size = 3500 / grid_size["x"]
+        self.y_size = 2000 / grid_size["y"]
+
+        #self.total_chunks = grid_size["x"] * grid_size["y"]
+        self.chunks = []
+
+        for x in range(self.x_size):
+            self.chunks[x] = []
+            for y in range(self.y_size):
+                self.chunks[x][y] = Chunk(self.x_size, self.y_size, x, y, node_amount)
+
+    
+
+
+
+
+
 
 
 def get_angle(p1, a1, p2) -> float:
@@ -637,6 +671,9 @@ bogatenje = False
 t_old = time()
 reverse = False
 do_main_loop = True
+
+grid = Grid({"x": 7, "y": 4}, 25)
+
 while do_main_loop and not btn.down:
     try:
         time_now = time()
