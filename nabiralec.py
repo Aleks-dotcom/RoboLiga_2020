@@ -311,10 +311,11 @@ class Point():
 class Chunk():
     def __init__(self, size_x, size_y, offset_x, offset_y, node_amount):
         self.node_sqrt = math.floor(math.sqrt(node_amount))
-        self.nodes = [self.node_sqrt]
-        for x in range(len(self.nodes)):
-            self.nodes[x] = [self.node_sqrt]
-            for y in range(len(self.nodes)):
+        self.nodes = [None] * self.node_sqrt
+
+        for x in range(self.nodes):
+            self.nodes[x] = [None] * self.node_sqrt
+            for y in range(self.nodes):
                 self.nodes[x][y] = Point({"x": offset_x * size_x, "y": offset_y * size_y})
 
 
@@ -329,10 +330,10 @@ class Grid():
         self.y_size = int(2000 / self.y_amount)
 
         #self.total_chunks = grid_size["x"] * grid_size["y"]
-        self.chunks = [self.x_amount]
+        self.chunks = [None] * self.x_amount
 
         for x in range(self.x_amount):
-            self.chunks[x] = [self.y_amount]
+            self.chunks[x] = [None] * self.y_amount
             for y in range(self.y_amount):
                 self.chunks[x][y] = Chunk(self.x_size, self.y_size, x, y, node_amount)
 
