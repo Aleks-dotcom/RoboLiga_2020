@@ -386,6 +386,13 @@ class Grid():
 
         return res
 
+    def get_chunks(self):
+        res = []
+        for x in range(self.x_amount):
+            for y in range(self.y_amount):
+                res.append(self.chunks[x][y])
+        
+        return res
 
 def get_angle(p1, a1, p2) -> float:
     """
@@ -720,6 +727,9 @@ reverse = False
 do_main_loop = True
 
 grid = Grid({"x": 7, "y": 4}, 25)
+for chunk in grid.get_chunks():
+    chunk.update_chunk()
+
 print(str(grid))
 
 while do_main_loop and not btn.down:
