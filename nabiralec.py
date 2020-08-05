@@ -557,6 +557,7 @@ state = State.IDLE
 state_old = -1
 # Indeks trenutne ciljne lokacije.
 target_idx = 0
+last_valid_target_idx = 0
 collecting = False
 diseaset = False
 
