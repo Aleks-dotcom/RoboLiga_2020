@@ -307,7 +307,7 @@ class Point():
 
 
 class Node():
-
+    # TODO: a <update_node()> dela pravilno? A se nam splaca popraulat tocka <self.point> ni na sredini noda ampak v spodnem kotu
     def __init__(self, position):
         self.point = Point(position)
         self.free = True
@@ -337,8 +337,19 @@ class Chunk():
         self.node_size = int(size_x / self.node_sqrt)
         self.offset_x = offset_x
         self.offset_y = offset_y
-        
+
+        self.size_x  = size_x
+        self.size_y = size_y
+
+        # so we can calculate what is within perticular chunk
+        self.boundary_min_x = self.size_x * self.offset_x
+        self.boundary_max_x = self.boundary_min_x + self.size_x
+        self.boundary_min_y =  self.size_y * self.offset_y
+        self.boundary_max_y = self.boundary_min_y + self.size_y
+        #center of the chunk, if ever needed ;)
+        #self.center = Point({'x':(self.boundary_max_x - self.boundary_min_x )/2,'y':(self.boundary_max_y- self.boundary_min_y)/2})
         self.nodes = [None] * self.node_sqrt
+
 
         for x in range(self.node_sqrt):
             self.nodes[x] = [None] * self.node_sqrt
@@ -352,6 +363,49 @@ class Chunk():
                 res += "\t id:" + str(self.offset_x) + str(self.offset_y) + str(self.nodes[x][y]) + "\n"
         
         return res
+
+
+    def diseased_in_chunk(self):
+        global game_state
+        in_chunk = False
+        x_range = (self.boundary_min_x,self.boundary_max_x)
+        y_range = (self.boundary_min_y,self.boundary_max_y)
+
+        if not game_state or game_state == -1:
+            return 
+        
+        for id, hive in game_state['objects']['hives'].items():
+            if hive["type"] == "HIVE_DISEASED":
+
+                hp = Point(hive["position"])
+
+                if hp.x - 60 > x_range[1]:
+                    in_chunk = False
+                elif hp.x + 60 < x_range[0]:
+                    in_chunk = False
+                elif hp.y + 60 < y_range[0]:
+                    in_chunk = False
+                elif hp.y - 60 > y_range[1]:
+                    in_chunk = False
+                else:
+                    in_chunk = True
+
+        return in_chunk
+
+        
+    def map_chunk(self):
+
+        update_chunk()
+        final_map = self.nodes
+
+        for x in range(self.node_sqrt):
+            for y in range(self.node_sqrt):
+                if self.nodes[x][y].free:
+                    final_map[x][y] = '0'
+                else: 
+                    final_map[x][y] = '1'
+
+        return final_map
 
 
     def update_chunk(self):
@@ -562,6 +616,10 @@ def reverse_robot(motor_left, motor_right):
         motor_right.run_timed(time_sp=1000, speed_sp=-450)
     sleep(2)
 
+            
+
+
+
 # -----------------------------------------------------------------------------
 # NASTAVITVE TIPAL, MOTORJEV IN POVEZAVE S STREŽNIKOM
 # -----------------------------------------------------------------------------
@@ -725,6 +783,8 @@ bogatenje = False
 t_old = time()
 reverse = False
 do_main_loop = True
+
+next_chunk = None
 
 grid = Grid({"x": 7, "y": 4}, 25)
 for chunk in grid.get_chunks():
