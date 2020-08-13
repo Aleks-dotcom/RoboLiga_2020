@@ -28,19 +28,36 @@ def lift(motor_left, motor_right, motor_medium):
     sleep(3)
 
 def drive(motor_left, motor_right, motor_medium):
-    motor_left.run_timed(time_sp=5000, speed_sp=900)
-    motor_right.run_timed(time_sp=5000, speed_sp=900)
+    motor_left.run_timed(time_sp=4000, speed_sp=900)
+    motor_right.run_timed(time_sp=4000, speed_sp=900)
     sleep(5)
 
 def reverse(motor_left, motor_right, motor_medium):
-    motor_left.run_timed(time_sp=5000, speed_sp=-900)
-    motor_right.run_timed(time_sp=5000, speed_sp=-900)
+    motor_left.run_timed(time_sp=4000, speed_sp=-900)
+    motor_right.run_timed(time_sp=4000, speed_sp=-900)
     sleep(5)
 
 def spin(motor_left, motor_right, motor_medium):
-    motor_left.run_timed(time_sp=5000, speed_sp=900)
-    motor_right.run_timed(time_sp=5000, speed_sp=-900)
+    motor_left.run_timed(time_sp=4000, speed_sp=900)
+    motor_right.run_timed(time_sp=4000, speed_sp=-900)
     sleep(5)
+
+def victory_dance(motor_left, motor_right, motor_medium):
+    motor_left.run_timed(time_sp=2200, speed_sp=900)
+    motor_right.run_timed(time_sp=2200, speed_sp=-900)
+    
+    motor_medium.run_timed(time_sp=1000, speed_sp=900)
+    sleep(1)
+    motor_medium.run_timed(time_sp=1000, speed_sp=-900)
+    sleep(1)
+
+    motor_left.run_timed(time_sp=2200, speed_sp=-900)
+    motor_right.run_timed(time_sp=2200, speed_sp=900)
+
+    motor_medium.run_timed(time_sp=1000, speed_sp=900)
+    sleep(1)
+    motor_medium.run_timed(time_sp=1000, speed_sp=-900)
+    sleep(1)
 
 
 
@@ -49,7 +66,8 @@ utilities = {
     "reverse": reverse,
     "lift": lift,
     "drop": drop,
-    "spin": spin
+    "spin": spin,
+    "dance": victory_dance
 }
 
 if len(sys.argv) <= 1:
@@ -147,7 +165,6 @@ def robot_die():
 # NASTAVITVE TIPAL, MOTORJEV
 # -----------------------------------------------------------------------------
 # Nastavimo tipala in gumbe.
-print('Priprava tipal ... ', end='', flush=True)
 btn = Button()
 #sensor_touch = init_sensor_touch()
 #print('OK!')
