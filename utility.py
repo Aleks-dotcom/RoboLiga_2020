@@ -64,6 +64,9 @@ def victory_dance(motor_left, motor_right, motor_medium):
             motor_medium.run_timed(time_sp=250, speed_sp=-900)
             sleep(0.25)
 
+
+def laugh(motor_left, motor_right, motor_medium):
+    Sound.speak("MUHUHAHAHAHAHAHAHAHAHAHAHAHA").wait()
     
 
 
@@ -74,7 +77,8 @@ utilities = {
     "lift": lift,
     "drop": drop,
     "spin": spin,
-    "dance": victory_dance
+    "dance": victory_dance,
+    "laugh": laugh
 }
 
 if len(sys.argv) <= 1:
