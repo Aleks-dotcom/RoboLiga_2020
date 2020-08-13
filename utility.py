@@ -92,6 +92,58 @@ def song(motor_left, motor_right, motor_medium):
     ]).wait()
 
 
+def darth_vader(motor_left, motor_right, motor_medium):
+    Sound.tone([
+    (392, 350, 100), (392, 350, 100), (392, 350, 100), (311.1, 250, 100),
+    (466.2, 25, 100), (392, 350, 100), (311.1, 250, 100), (466.2, 25, 100),
+    (392, 700, 100), (587.32, 350, 100), (587.32, 350, 100),
+    (587.32, 350, 100), (622.26, 250, 100), (466.2, 25, 100),
+    (369.99, 350, 100), (311.1, 250, 100), (466.2, 25, 100), (392, 700, 100),
+    (784, 350, 100), (392, 250, 100), (392, 25, 100), (784, 350, 100),
+    (739.98, 250, 100), (698.46, 25, 100), (659.26, 25, 100),
+    (622.26, 25, 100), (659.26, 50, 400), (415.3, 25, 200), (554.36, 350, 100),
+    (523.25, 250, 100), (493.88, 25, 100), (466.16, 25, 100), (440, 25, 100),
+    (466.16, 50, 400), (311.13, 25, 200), (369.99, 350, 100),
+    (311.13, 250, 100), (392, 25, 100), (466.16, 350, 100), (392, 250, 100),
+    (466.16, 25, 100), (587.32, 700, 100), (784, 350, 100), (392, 250, 100),
+    (392, 25, 100), (784, 350, 100), (739.98, 250, 100), (698.46, 25, 100),
+    (659.26, 25, 100), (622.26, 25, 100), (659.26, 50, 400), (415.3, 25, 200),
+    (554.36, 350, 100), (523.25, 250, 100), (493.88, 25, 100),
+    (466.16, 25, 100), (440, 25, 100), (466.16, 50, 400), (311.13, 25, 200),
+    (392, 350, 100), (311.13, 250, 100), (466.16, 25, 100),
+    (392.00, 300, 150), (311.13, 250, 100), (466.16, 25, 100), (392, 700)
+    ])
+
+    motor_left.run_timed(time_sp=5000, speed_sp=200)
+    motor_right.run_timed(time_sp=5000, speed_sp=200)
+
+    for j in range(20):
+        motor_medium.run_timed(time_sp=100, speed_sp=900)
+        sleep(0.1)
+        motor_medium.run_timed(time_sp=100, speed_sp=-900)
+        sleep(0.1)
+
+    motor_left.run_timed(time_sp=5000, speed_sp=-400)
+    motor_right.run_timed(time_sp=5000, speed_sp=400)
+
+    for j in range(20):
+        motor_medium.run_timed(time_sp=100, speed_sp=900)
+        sleep(0.1)
+        motor_medium.run_timed(time_sp=100, speed_sp=-900)
+        sleep(0.1)
+
+    motor_left.run_timed(time_sp=5000, speed_sp=400)
+    motor_right.run_timed(time_sp=5000, speed_sp=-400)
+
+    for j in range(20):
+        motor_medium.run_timed(time_sp=100, speed_sp=900)
+        sleep(0.1)
+        motor_medium.run_timed(time_sp=100, speed_sp=-900)
+        sleep(0.1)
+
+    sleep(7)
+
+
 utilities = {
     "drive": drive,
     "reverse": reverse,
@@ -100,7 +152,8 @@ utilities = {
     "spin": spin,
     "dance": victory_dance,
     "laugh": laugh,
-    "song": song
+    "song": song,
+    "empire": darth_vader
 }
 
 if len(sys.argv) <= 1:
