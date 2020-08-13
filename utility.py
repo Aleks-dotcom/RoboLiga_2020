@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 
 # Če želite na svojem računalniku namestiti knjižnico python-ev3dev 
 # in uprorabljati "code auto-completition":
@@ -8,7 +9,6 @@ from ev3dev.ev3 import TouchSensor, Button, LargeMotor, MediumMotor, Sound
 # sudo apt-get install python3-pycurl
 # sudo apt-get install python3-ujson
 import pycurl
-import ujson
 import sys
 import math
 from io import BytesIO
