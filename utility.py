@@ -114,34 +114,34 @@ def darth_vader(motor_left, motor_right, motor_medium):
     (392.00, 300, 150), (311.13, 250, 100), (466.16, 25, 100), (392, 700)
     ])
 
-    motor_medium.run_timed(time_sp=700, speed_sp=200)
+    motor_medium.run_timed(time_sp=500, speed_sp=200)
     sleep(1)
 
     motor_left.run_timed(time_sp=5000, speed_sp=200)
     motor_right.run_timed(time_sp=5000, speed_sp=200)
 
     for j in range(20):
-        motor_medium.run_timed(time_sp=100, speed_sp=900)
+        motor_medium.run_timed(time_sp=100, speed_sp=600)
         sleep(0.1)
-        motor_medium.run_timed(time_sp=100, speed_sp=-900)
+        motor_medium.run_timed(time_sp=100, speed_sp=-600)
         sleep(0.1)
 
     motor_left.run_timed(time_sp=5000, speed_sp=-200)
     motor_right.run_timed(time_sp=5000, speed_sp=200)
 
     for j in range(20):
-        motor_medium.run_timed(time_sp=100, speed_sp=900)
+        motor_medium.run_timed(time_sp=100, speed_sp=600)
         sleep(0.1)
-        motor_medium.run_timed(time_sp=100, speed_sp=-900)
+        motor_medium.run_timed(time_sp=100, speed_sp=-600)
         sleep(0.1)
 
     motor_left.run_timed(time_sp=5000, speed_sp=200)
     motor_right.run_timed(time_sp=5000, speed_sp=-200)
 
     for j in range(20):
-        motor_medium.run_timed(time_sp=100, speed_sp=900)
+        motor_medium.run_timed(time_sp=100, speed_sp=600)
         sleep(0.1)
-        motor_medium.run_timed(time_sp=100, speed_sp=-900)
+        motor_medium.run_timed(time_sp=100, speed_sp=-600)
         sleep(0.1)
 
 
