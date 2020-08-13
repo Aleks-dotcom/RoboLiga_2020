@@ -159,7 +159,7 @@ motor_right = init_large_motor(MOTOR_RIGHT_PORT)
 motor_medium = init_medium_motor(MOTOR_MEDIUM_PORT)
 
 
-SONG_LYRICS = "Executing utility functions"
+SONG_LYRICS = "Executing function " + function
 Sound.speak(SONG_LYRICS).wait()
 
 utilities[function](motor_left, motor_right, motor_medium)
