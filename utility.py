@@ -43,31 +43,26 @@ def spin(motor_left, motor_right, motor_medium):
     sleep(5)
 
 def victory_dance(motor_left, motor_right, motor_medium):
-    for i in range(3):
-        Sound.speak("This is a party")
-        motor_left.run_timed(time_sp=1000, speed_sp=900)
-        motor_right.run_timed(time_sp=1000, speed_sp=-900)
+    for i in range(5):
+        Sound.speak("PARTY PARTY PARTY PARTY")
+        motor_left.run_timed(time_sp=1500, speed_sp=900)
+        motor_right.run_timed(time_sp=1500, speed_sp=-900)
         
-        motor_medium.run_timed(time_sp=250, speed_sp=900)
-        sleep(0.25)
-        motor_medium.run_timed(time_sp=250, speed_sp=-900)
-        sleep(0.25)
-        motor_medium.run_timed(time_sp=250, speed_sp=900)
-        sleep(0.25)
-        motor_medium.run_timed(time_sp=250, speed_sp=-900)
-        sleep(0.25)
+        for j in range(3):
+            motor_medium.run_timed(time_sp=250, speed_sp=900)
+            sleep(0.25)
+            motor_medium.run_timed(time_sp=250, speed_sp=-900)
+            sleep(0.25)
+        
 
-        motor_left.run_timed(time_sp=1000, speed_sp=-900)
-        motor_right.run_timed(time_sp=1000, speed_sp=900)
+        motor_left.run_timed(time_sp=1500, speed_sp=-900)
+        motor_right.run_timed(time_sp=1500, speed_sp=900)
         
-        motor_medium.run_timed(time_sp=250, speed_sp=900)
-        sleep(0.25)
-        motor_medium.run_timed(time_sp=250, speed_sp=-900)
-        sleep(0.25)
-        motor_medium.run_timed(time_sp=250, speed_sp=900)
-        sleep(0.25)
-        motor_medium.run_timed(time_sp=250, speed_sp=-900)
-        sleep(0.25)
+        for j in range(3):
+            motor_medium.run_timed(time_sp=250, speed_sp=900)
+            sleep(0.25)
+            motor_medium.run_timed(time_sp=250, speed_sp=-900)
+            sleep(0.25)
 
     
 
