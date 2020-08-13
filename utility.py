@@ -114,7 +114,7 @@ def darth_vader(motor_left, motor_right, motor_medium):
     (392.00, 300, 150), (311.13, 250, 100), (466.16, 25, 100), (392, 700)
     ])
 
-    motor_medium.run_timed(time_sp=1000, speed_sp=125)
+    motor_medium.run_timed(time_sp=700, speed_sp=200)
     sleep(1)
 
     motor_left.run_timed(time_sp=5000, speed_sp=200)
