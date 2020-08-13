@@ -46,6 +46,8 @@ utilities = {
     "drop": drop
 }
 
+for x in sys.argv:
+    print(x)
 
 if len(sys.argv) == 0:
     print("No arguments passed: [ drive | reverse | drop | lift ]")
