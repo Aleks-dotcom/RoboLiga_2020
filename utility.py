@@ -46,19 +46,15 @@ utilities = {
     "drop": drop
 }
 
-print(len(sys.argv))
-for x in sys.argv:
-    print(x)
-
-if len(sys.argv) == 0:
+if len(sys.argv) <= 1:
     print("No arguments passed: [ drive | reverse | drop | lift ]")
     sys.exit(1)
 
-if len(sys.argv) > 1:
+if len(sys.argv) > 2:
     print("Too many arguments: [ drive | reverse | drop | lift ]")
     sys.exit(1)
 
-function = sys.argv[0]
+function = sys.argv[1]
 if function not in utilities:
     print("Wrong argument: [ drive | reverse | drop | lift ]")
     sys.exit(1)
