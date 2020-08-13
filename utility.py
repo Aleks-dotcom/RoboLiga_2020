@@ -19,23 +19,28 @@ from collections import deque
 # Funkcije lepote
 
 def drop(motor_left, motor_right, motor_medium):
-    motor_medium.run_timed(time_sp=2000, speed_sp=-900)
+    motor_medium.run_timed(time_sp=1500, speed_sp=-700)
     sleep(3)
     
 
 def lift(motor_left, motor_right, motor_medium):
-    motor_medium.run_timed(time_sp=2000, speed_sp=900)
+    motor_medium.run_timed(time_sp=1500, speed_sp=700)
     sleep(3)
 
 def drive(motor_left, motor_right, motor_medium):
-    motor_left.run_timed(time_sp=2000, speed_sp=450)
-    motor_right.run_timed(time_sp=2000, speed_sp=450)
-    sleep(2)
+    motor_left.run_timed(time_sp=5000, speed_sp=900)
+    motor_right.run_timed(time_sp=5000, speed_sp=900)
+    sleep(5)
 
 def reverse(motor_left, motor_right, motor_medium):
-    motor_left.run_timed(time_sp=2000, speed_sp=-450)
-    motor_right.run_timed(time_sp=2000, speed_sp=-450)
-    sleep(2)
+    motor_left.run_timed(time_sp=5000, speed_sp=-900)
+    motor_right.run_timed(time_sp=5000, speed_sp=-900)
+    sleep(5)
+
+def spin(motor_left, motor_right, motor_medium):
+    motor_left.run_timed(time_sp=5000, speed_sp=900)
+    motor_right.run_timed(time_sp=5000, speed_sp=-900)
+    sleep(5)
 
 
 
@@ -43,20 +48,21 @@ utilities = {
     "drive": drive,
     "reverse": reverse,
     "lift": lift,
-    "drop": drop
+    "drop": drop,
+    "spin": spin
 }
 
 if len(sys.argv) <= 1:
-    print("No arguments passed: [ drive | reverse | drop | lift ]")
+    print("No arguments passed: [ drive | reverse | drop | lift | spin ]")
     sys.exit(1)
 
 if len(sys.argv) > 2:
-    print("Too many arguments: [ drive | reverse | drop | lift ]")
+    print("Too many arguments: [ drive | reverse | drop | lift | spin ]")
     sys.exit(1)
 
 function = sys.argv[1]
 if function not in utilities:
-    print("Wrong argument: [ drive | reverse | drop | lift ]")
+    print("Wrong argument: [ drive | reverse | drop | lift | spin ]")
     sys.exit(1)
 
 
@@ -154,8 +160,8 @@ motor_medium = init_medium_motor(MOTOR_MEDIUM_PORT)
 
 
 SONG_LYRICS = "Executing utility functions"
-Sound.speak(SONG_LYRICS)
+Sound.speak(SONG_LYRICS).wait()
 
 utilities[function](motor_left, motor_right, motor_medium)
-sleep(3)
+sleep(1)
 robot_die()
