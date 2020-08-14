@@ -38,9 +38,9 @@ def reverse(motor_left, motor_right, motor_medium):
     sleep(5)
 
 def spin(motor_left, motor_right, motor_medium):
-    motor_left.run_timed(time_sp=4000, speed_sp=900)
-    motor_right.run_timed(time_sp=4000, speed_sp=-900)
-    sleep(5)
+    motor_left.run_timed(time_sp=6000, speed_sp=1000)
+    motor_right.run_timed(time_sp=6000, speed_sp=-1000)
+    sleep(6)
 
 def victory_dance(motor_left, motor_right, motor_medium):
     for i in range(5):
