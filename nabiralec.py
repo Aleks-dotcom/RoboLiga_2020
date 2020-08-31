@@ -63,8 +63,8 @@ SPEED_BASE_MAX = 800
 # Parametri za PID
 # Obračanje na mestu in zavijanje med vožnjo naravnost
 PID_TURN_KP = 1.5
-PID_TURN_KI = .1
-PID_TURN_KD = .3
+PID_TURN_KI = .3
+PID_TURN_KD = .1
 PID_TURN_INT_MAX = 100
 # Nazivna hitrost pri vožnji naravnost.
 PID_STRAIGHT_KP = .4
