@@ -64,7 +64,7 @@ SPEED_BASE_MAX = 800
 # Obračanje na mestu in zavijanje med vožnjo naravnost
 PID_TURN_KP = 1.5
 PID_TURN_KI = .1
-PID_TURN_KD = 0
+PID_TURN_KD = .3
 PID_TURN_INT_MAX = 100
 # Nazivna hitrost pri vožnji naravnost.
 PID_STRAIGHT_KP = .4
@@ -597,7 +597,7 @@ def drop_cage(motor_medium):
     if (not cage_lifted):
         return
     cage_lifted = False
-    motor_medium.run_timed(time_sp=500, speed_sp=-1000)
+    motor_medium.run_timed(time_sp=500, speed_sp=-500)
     sleep(2)
     
 
@@ -607,7 +607,7 @@ def lift_cage(motor_medium):
     if (cage_lifted):
         return
     cage_lifted = True
-    motor_medium.run_timed(time_sp=500, speed_sp=1000)
+    motor_medium.run_timed(time_sp=500, speed_sp=500)
     sleep(2)
 
 def reverse_robot(motor_left, motor_right):
