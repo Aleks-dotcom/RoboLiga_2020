@@ -35,7 +35,7 @@ from collections import deque
 
 # Nastavitev najpomembnjših parametrov
 # ID robota. Spremenite, da ustreza številki označbe, ki je določena vaši ekipi.
-ROBOT_ID = 32
+ROBOT_ID = 18
 # Naslov IP igralnega strežnika.
 SERVER_IP = "192.168.2.3/game/"
 # Datoteka na igralnem strežniku s podatki o tekmi.
@@ -62,14 +62,14 @@ SPEED_BASE_MAX = 800
 
 # Parametri za PID
 # Obračanje na mestu in zavijanje med vožnjo naravnost
-PID_TURN_KP = 1.5
-PID_TURN_KI = .25
-PID_TURN_KD = .005
+PID_TURN_KP = 0
+PID_TURN_KI = 0
+PID_TURN_KD = 0
 PID_TURN_INT_MAX = 80
 # Nazivna hitrost pri vožnji naravnost.
-PID_STRAIGHT_KP = 1.5
-PID_STRAIGHT_KI = .25
-PID_STRAIGHT_KD = .005
+PID_STRAIGHT_KP = 0
+PID_STRAIGHT_KI = 0
+PID_STRAIGHT_KD = 0
 PID_STRAIGHT_INT_MAX = 50
 
 # Dolžina FIFO vrste za hranjenje meritev (oddaljenost in kot do cilja).
