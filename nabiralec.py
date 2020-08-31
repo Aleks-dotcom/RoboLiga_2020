@@ -62,14 +62,14 @@ SPEED_BASE_MAX = 800
 
 # Parametri za PID
 # Obračanje na mestu in zavijanje med vožnjo naravnost
-PID_TURN_KP = .5
-PID_TURN_KI = .05
-PID_TURN_KD = .05
+PID_TURN_KP = 1.5
+PID_TURN_KI = .5
+PID_TURN_KD = .005
 PID_TURN_INT_MAX = 100
 # Nazivna hitrost pri vožnji naravnost.
 PID_STRAIGHT_KP = .4
-PID_STRAIGHT_KI = 0
-PID_STRAIGHT_KD = 0
+PID_STRAIGHT_KI = .25
+PID_STRAIGHT_KD = 0.005
 PID_STRAIGHT_INT_MAX = 50
 
 # Dolžina FIFO vrste za hranjenje meritev (oddaljenost in kot do cilja).
