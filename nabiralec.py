@@ -35,7 +35,7 @@ from collections import deque
 
 # Nastavitev najpomembnjših parametrov
 # ID robota. Spremenite, da ustreza številki označbe, ki je določena vaši ekipi.
-ROBOT_ID = 18
+ROBOT_ID = 33
 # Naslov IP igralnega strežnika.
 SERVER_IP = "192.168.2.3/game/"
 # Datoteka na igralnem strežniku s podatki o tekmi.
