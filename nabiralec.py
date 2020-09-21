@@ -67,9 +67,9 @@ PID_TURN_KI = .1
 PID_TURN_KD = .1
 PID_TURN_INT_MAX = 80
 # Nazivna hitrost pri vožnji naravnost.
-PID_STRAIGHT_KP = .5
-PID_STRAIGHT_KI = .2
-PID_STRAIGHT_KD = .1
+PID_STRAIGHT_KP = .2
+PID_STRAIGHT_KI = 0
+PID_STRAIGHT_KD = 0
 PID_STRAIGHT_INT_MAX = 50
 
 # Dolžina FIFO vrste za hranjenje meritev (oddaljenost in kot do cilja).
