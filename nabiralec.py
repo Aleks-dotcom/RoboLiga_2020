@@ -35,7 +35,7 @@ from collections import deque
 
 # Nastavitev najpomembnjših parametrov
 # ID robota. Spremenite, da ustreza številki označbe, ki je določena vaši ekipi.
-ROBOT_ID = 18
+ROBOT_ID = 33
 # Naslov IP igralnega strežnika.
 SERVER_IP = "192.168.2.3/game/"
 # Datoteka na igralnem strežniku s podatki o tekmi.
@@ -59,17 +59,18 @@ SPEED_MAX = 900
 # Najvišja dovoljena nazivna hitrost motorjev pri vožnji naravnost.
 # Naj bo manjša kot SPEED_MAX, da ima robot še možnost zavijati.
 SPEED_BASE_MAX = 800
+SPEED_REVERSE_MAX = 700
 
 # Parametri za PID
 # Obračanje na mestu in zavijanje med vožnjo naravnost
-PID_TURN_KP = .6
-PID_TURN_KI = 0
+PID_TURN_KP = 1.5
+PID_TURN_KI = .1
 PID_TURN_KD = 0
-PID_TURN_INT_MAX = 80
+PID_TURN_INT_MAX = 100
 # Nazivna hitrost pri vožnji naravnost.
-PID_STRAIGHT_KP = .6
-PID_STRAIGHT_KI = 0
-PID_STRAIGHT_KD = 0
+PID_STRAIGHT_KP = .4
+PID_STRAIGHT_KI = .25
+PID_STRAIGHT_KD = 0.005
 PID_STRAIGHT_INT_MAX = 50
 
 # Dolžina FIFO vrste za hranjenje meritev (oddaljenost in kot do cilja).
@@ -81,11 +82,11 @@ DIST_EPS = 170
 # Dovoljena napaka pri obračanju [stopinje].
 DIR_EPS = 10
 # Bližina cilja [mm].
-DIST_NEAR = 100
+DIST_NEAR = 250
 # Koliko sekund je robot lahko stanju vožnje naravnost v bližini cilja
 # (oddaljen manj kot DIST_NEAR), preden sprožimo varnostni mehanizem
 # in ga damo v stanje obračanja na mestu.
-TIMER_NEAR_TARGET = 2
+TIMER_NEAR_TARGET = 2.5
 
 
 cage_lifted = True
@@ -563,6 +564,18 @@ def use_double_kibla(hives, curent_hive, HIVE_IGNORE_LIST):
     else: 
         return 0    
 """
+def set_near_values():
+    global reverse
+    global DIST_NEAR
+    global DIR_ESP
+    if reverse:
+        DIR_ESP = 20
+        DIST_NEAR = 3000
+    else:
+        DIR_ESP = 10
+        DIST_NEAR = 250
+
+
 def get_next_healthy(rp, hives, team_my_tag, HIVE_IGNORE_LIST):
     best_cost = (0, 99999, None)
     for id, data in hives.items():
@@ -962,6 +975,7 @@ while do_main_loop and not btn.down:
                         state = State.LOAD_NEXT_TARGET
                         found = True
                         reverse = False
+                        set_near_values()
 
 
                 elif state == State.LOAD_NEXT_TARGET:
@@ -999,18 +1013,24 @@ while do_main_loop and not btn.down:
 
                             if hives_in_control == 1:
                                 if not bogatenje:
+                                    if last_valid_target_idx not in HIVE_IGNORE_LIST:
+                                        HIVE_IGNORE_LIST.append(last_valid_target_idx)
                                     target_idx = 0
                                     target = MY_HIVE
                                     reverse = True
+                                    set_near_values()
                                 else:
                                     target_idx = 0
                                     target = Point({"x": RICH_LINE, "y": robot_pos.y})
                                     bogatenje = True
                                     if robot_pos.x > target.x:
+                                        if last_valid_target_idx not in HIVE_IGNORE_LIST:
+                                            HIVE_IGNORE_LIST.append(last_valid_target_idx)
                                         bogatenje = False
                                         hives_in_control = 1
                                         target = MY_HIVE
                                         reverse = True
+                                        set_near_values()
                         
                     else:
                         if not reset_target:
@@ -1023,6 +1043,7 @@ while do_main_loop and not btn.down:
 
                             HIVE_IGNORE_LIST.append(last_valid_target_idx)
                             reverse = False
+                            set_near_values()
                             state = State.IDLE
                             reset_target = True
                             target_idx = 0
@@ -1092,8 +1113,9 @@ while do_main_loop and not btn.down:
                         #   V tem primeru bi bolj intuitivno nastavili
                         #   speed_right = u in speed_left = -u.
                         u = PID_turn.update(measurement=target_angle)
-                        speed_right = -u #if not reverse else u
-                        speed_left = u #if not reverse else -u
+                        scale = 1.6
+                        speed_right = -u*1.2 if not reverse else -u *scale
+                        speed_left = u*1.2 if not reverse else u *scale
                 elif state == State.DRIVE_STRAIGHT:
                     # Vožnja robota naravnost proti ciljni točki.
                     # Vmes bi radi tudi zavijali, zato uporabimo dva regulatorja.
@@ -1138,8 +1160,9 @@ while do_main_loop and not btn.down:
                         # da imamo še manevrski prostor za zavijanje.
                         u_base = min(max(u_base, -SPEED_BASE_MAX), SPEED_BASE_MAX)
                         d = -1 if reverse else 1
-                        speed_right = -u_base*d - u_turn
-                        speed_left = -u_base*d + u_turn
+                        speed_right = -u_base*d - u_turn 
+                        speed_left = -u_base*d + u_turn 
+                        
 
                 # Omejimo vrednosti za hitrosti na motorjih.
                 speed_right = round(
