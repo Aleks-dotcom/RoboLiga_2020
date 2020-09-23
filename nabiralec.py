@@ -62,13 +62,13 @@ SPEED_BASE_MAX = 800
 
 # Parametri za PID
 # Obračanje na mestu in zavijanje med vožnjo naravnost
-PID_TURN_KP = .6
+PID_TURN_KP = .2
 PID_TURN_KI = 0
 PID_TURN_KD = 0
 PID_TURN_INT_MAX = 80
 # Nazivna hitrost pri vožnji naravnost.
 PID_STRAIGHT_KP = .6
-PID_STRAIGHT_KI = 0
+PID_STRAIGHT_KI = .4
 PID_STRAIGHT_KD = 0
 PID_STRAIGHT_INT_MAX = 50
 
@@ -914,10 +914,10 @@ while do_main_loop and not btn.down:
             # Če tekma poteka in je oznaka robota vidna na kameri,
             # potem izračunamo novo hitrost na motorjih.
             # Sicer motorje ustavimo.
-
+            print('robotalive1', game_on,robot_alive)
             if game_on and robot_alive:
-
-
+    
+                print('robotalive2')
                 # Razdalja med robotom in ciljem.
                 target_dist = get_distance(robot_pos, target)
                 # Kot med robotom in ciljem.
@@ -1095,7 +1095,7 @@ while do_main_loop and not btn.down:
                         speed_right = -u #if not reverse else u
                         speed_left = u #if not reverse else -u
                 elif state == State.DRIVE_STRAIGHT:
-                    # Vožnja robota naravnost proti ciljni točki.
+                    #Vožnja robota naravnost proti ciljni točki.
                     # Vmes bi radi tudi zavijali, zato uporabimo dva regulatorja.
                     if state_changed:
                         # Ponastavi regulatorja PID.
@@ -1114,9 +1114,23 @@ while do_main_loop and not btn.down:
                     robot_near_target_old = robot_near_target
 
                     # Ali smo že na cilju?
-                    # Zadnjih nekaj obhodov zanke mora biti razdalja do cilja
+                    # Zadnjih nekaj obhodov zanke mora biti razdalja do cilj
                     # manjša ali enaka DIST_EPS.
                     err_eps = [d > DIST_EPS for d in robot_dist_hist]
+                    if reverse:
+                        if robot_pos.x < 300:
+                            speed_right = 0
+                            speed_left = 0
+                            #y=robot_pos.y
+                            #if y > 500 and y <1500:
+                            reverse = False
+                            state = State.LOAD_NEXT_TARGET
+                            print('we hit home!')
+                            hives_in_control = 0
+                            bogatenje = False
+                            continue
+                        else:
+                            print('we are far away from home')
                     if sum(err_eps) == 0:
                         # Razdalja do cilja je znotraj tolerance, zamenjamo stanje.
                         speed_right = 0
@@ -1140,8 +1154,6 @@ while do_main_loop and not btn.down:
                         d = -1 if reverse else 1
                         speed_right = -u_base*d - u_turn
                         speed_left = -u_base*d + u_turn
-
-                # Omejimo vrednosti za hitrosti na motorjih.
                 speed_right = round(
                                 min(
                                     max(speed_right, -SPEED_MAX),
