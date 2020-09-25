@@ -63,14 +63,21 @@ SPEED_REVERSE_MAX = 700
 
 # Parametri za PID
 # Obračanje na mestu in zavijanje med vožnjo naravnost
-PID_TURN_KP = 1.5
-PID_TURN_KI = .1
-PID_TURN_KD = 0
+
+#1.5 - 0.3 - 0.1 so bili zanimivi za rikverc
+PID_TURN_KP = 1.6
+PID_TURN_KI = .15
+PID_TURN_KD = .4
 PID_TURN_INT_MAX = 100
+#ŠPAGET - smo dodali testing ločene pid vrednosti za rikverc only(s kocko težje obračat)
+PID_TURN_REVERSE_KP = 1.5
+PID_TURN_REVERSE_KI = .15
+PID_TURN_REVERSE_KD = .25
+#not really
 # Nazivna hitrost pri vožnji naravnost.
-PID_STRAIGHT_KP = .4
-PID_STRAIGHT_KI = .25
-PID_STRAIGHT_KD = 0.005
+PID_STRAIGHT_KP = .5
+PID_STRAIGHT_KI = .35
+PID_STRAIGHT_KD = 0.007
 PID_STRAIGHT_INT_MAX = 50
 
 # Dolžina FIFO vrste za hranjenje meritev (oddaljenost in kot do cilja).
@@ -86,7 +93,7 @@ DIST_NEAR = 250
 # Koliko sekund je robot lahko stanju vožnje naravnost v bližini cilja
 # (oddaljen manj kot DIST_NEAR), preden sprožimo varnostni mehanizem
 # in ga damo v stanje obračanja na mestu.
-TIMER_NEAR_TARGET = 2.5
+TIMER_NEAR_TARGET = 5.5
 
 
 cage_lifted = True
@@ -835,6 +842,16 @@ if robot_pos:
 # setpoint=0 pomeni, da naj bo kot med robotom in ciljem (target_angle) enak 0.
 # Naša regulirana veličina je torej kar napaka kota, ki mora biti 0.
 # To velja tudi za regulacijo vožnje naravnost.
+#ŠPAGET ŠPAGET
+
+
+PID_turn_reverse = PID(
+    setpoint=0,
+    Kp=PID_TURN_REVERSE_KP,
+    Ki=PID_TURN_REVERSE_KI,
+    Kd=PID_TURN_REVERSE_KD,
+    integral_limit=PID_TURN_INT_MAX)
+     
 PID_turn = PID(
     setpoint=0,
     Kp=PID_TURN_KP,
@@ -877,7 +894,7 @@ bogatenje = False
 # Merimo čas obhoda zanke. Za visoko odzivnost robota je zelo pomembno,
 # da je ta čas čim krajši.
 t_old = time()
-reverse = False
+reverse = False  #attemptam nek ŠPAGET code rn
 do_main_loop = True
 
 next_chunk = None
@@ -888,6 +905,37 @@ for chunk in grid.get_chunks():
 
 #print(str(grid))
 
+"""
+#ŠPAGETNA KODA
+modifier = 10
+speed_right = 100
+speed_left = -100
+
+while do_main_loop:
+    # Izračunane hitrosti zapišemo na motorje.
+    motor_right.run_forever(speed_sp=speed_right)
+    motor_left.run_forever(speed_sp=speed_left)
+    print("vrtimo se pri hitrosti " + str(speed_right))
+    sleep(5)
+    speed_right += modifier
+    speed_left -= modifier
+    motor_right.stop
+    motor_left.stop
+    sleep(2)
+    if input("Jumpstart y?") == 'y':
+        prev_right = speed_right
+        prev_left = speed_left
+        speed_right = -800
+        speed_left = 800
+        motor_right.run_forever(speed_sp=speed_right)
+        motor_left.run_forever(speed_sp=speed_left)
+        sleep(0.7)
+        speed_right = prev_right
+        speed_left = prev_left
+
+                                                
+#END OF ŠPAGETd
+"""
 while do_main_loop and not btn.down:
     try:
         time_now = time()
@@ -1073,10 +1121,16 @@ while do_main_loop and not btn.down:
                     state = State.IDLE
 
                 elif state == State.TURN:
+                    #ŠPAGET
+                    if reverse:
+                        obracalec = PID_turn_reverse
+                    else:
+                        obracalec = PID_turn
                     # Obračanje robota na mestu, da bo obrnjen proti cilju.
                     if state_changed:
                         # Če smo ravno prišli v to stanje, najprej ponastavimo PID.
-                        PID_turn.reset()
+                        #PID_turn.reset()
+                        obracalec.reset()
 
                     # Ali smo že dosegli ciljni kot?
                     # Zadnjih nekaj obhodov zanke mora biti absolutna vrednost
@@ -1112,10 +1166,21 @@ while do_main_loop and not btn.down:
                         #       measurement= -target_angle.
                         #   V tem primeru bi bolj intuitivno nastavili
                         #   speed_right = u in speed_left = -u.
-                        u = PID_turn.update(measurement=target_angle)
-                        scale = 1.6
-                        speed_right = -u*1.2 if not reverse else -u *scale
-                        speed_left = u*1.2 if not reverse else u *scale
+                        #ŠPAGET u = PID_turn.update(measurement=target_angle)
+                        u = obracalec.update(measurement=target_angle)
+                        scale = 2.5
+                        speed_right = -u if hives_in_control == 0 else -u *scale 
+                        speed_left = u if hives_in_control == 0 else u *scale
+                        #ma raj ne
+                        """
+                        if reverse:
+                            if speed_right < 0:
+                                speed_right *= 0.3
+                                speed_left *= 2
+                            else:
+                                speed_right *= 2
+                                speed_left *= 0.3
+                                """
                 elif state == State.DRIVE_STRAIGHT:
                     # Vožnja robota naravnost proti ciljni točki.
                     # Vmes bi radi tudi zavijali, zato uporabimo dva regulatorja.
@@ -1162,8 +1227,13 @@ while do_main_loop and not btn.down:
                         d = -1 if reverse else 1
                         speed_right = -u_base*d - u_turn 
                         speed_left = -u_base*d + u_turn 
-                        
-
+                        if reverse:
+                            if speed_right < speed_left:
+                                speed_right *= 1.85
+                                speed_left *= 0.6
+                            else:
+                                speed_right *= 0.6
+                                speed_left *= 1.85
                 # Omejimo vrednosti za hitrosti na motorjih.
                 speed_right = round(
                                 min(
