@@ -1080,7 +1080,7 @@ while do_main_loop and not btn.down:
                                     target_idx = 0
                                     target = Point({"x": RICH_LINE, "y": robot_pos.y})
                                     bogatenje = True
-                                    if (team_my_tag == 'team1' and robot_pos.x > target.x) or (team_my_tag = 'team2' and robot_pos.x < target.x):
+                                    if (team_my_tag == 'team1' and robot_pos.x > target.x) or (team_my_tag == 'team2' and robot_pos.x < target.x):
                                         if last_valid_target_idx not in HIVE_IGNORE_LIST:
                                             HIVE_IGNORE_LIST.append(last_valid_target_idx)
                                         bogatenje = False
@@ -1114,8 +1114,9 @@ while do_main_loop and not btn.down:
                             if target == None:
                                 target_idx = 0
                                 target = robot_pos
+                                HIVE_IGNORE_LIST.clear()
                                 #experimental change -cene
-                                robot_die()
+                                #robot_die()
                             else:
                                 diseaset = True
                         else:
