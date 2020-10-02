@@ -1107,11 +1107,13 @@ while do_main_loop and not btn.down:
                                 print("diseased smo pripeljali v opp bazo in zdej se diseaset = false")
                                 #experimental -cene
                                 #reverse_robot(motor_left, motor_right)
-                                diseaset = False
+                                #diseaset = False
                                 #zaenkrat se zaklenimo v njihovo bazo -tbd- -cene
                                 motor_left.stop(stop_action='brake')
                                 motor_right.stop(stop_action='brake')
                                 #do what next??
+                                while True:
+                                    print("a")
 
 
                             HIVE_IGNORE_LIST.append(last_valid_target_idx)
