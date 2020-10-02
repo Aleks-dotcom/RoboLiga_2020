@@ -558,7 +558,7 @@ def robot_die():
 
     
 
-    
+    """
     Sound.play_song((
         ('E4', 's'),
         ('E4', 'e'),
@@ -567,7 +567,7 @@ def robot_die():
         ('E4', 'e'),
         ('G4', 'q'),
         ('G3', 'e')))
-    
+    """
     
     sys.exit(0)
 
@@ -814,7 +814,7 @@ print('Cakam na zacetek tekme ...')
 
 
 
-Sound.speak(SONG_LYRICS)
+#Sound.speak(SONG_LYRICS)
 
 # Začetno stanje.
 state = State.IDLE
