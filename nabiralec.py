@@ -556,9 +556,9 @@ def robot_die():
    
     drop_cage(motor_medium)
 
-    Sound.play_file('ttfatf.wav')
+    
 
-    """
+    
     Sound.play_song((
         ('E4', 's'),
         ('E4', 'e'),
@@ -567,7 +567,7 @@ def robot_die():
         ('E4', 'e'),
         ('G4', 'q'),
         ('G3', 'e')))
-    """
+    
     
     sys.exit(0)
 
@@ -811,6 +811,8 @@ ENDGAME_END = Point({"x": 250, "y": 1750}, "ENDGAME_END")
 # -----------------------------------------------------------------------------
 print('Izvajam glavno zanko. Prekini jo s pritiskon na tipko DOL.')
 print('Cakam na zacetek tekme ...')
+
+Sound.play('primo_victoria.wav')
 
 Sound.speak(SONG_LYRICS)
 
