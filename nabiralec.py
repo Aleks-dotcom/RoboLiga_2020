@@ -35,7 +35,7 @@ from collections import deque
 
 # Nastavitev najpomembnjših parametrov
 # ID robota. Spremenite, da ustreza številki označbe, ki je določena vaši ekipi.
-ROBOT_ID = 33
+ROBOT_ID = 25
 # Naslov IP igralnega strežnika.
 SERVER_IP = "192.168.2.3/game/"
 # Datoteka na igralnem strežniku s podatki o tekmi.
@@ -305,11 +305,12 @@ class Point():
     """
     Točka na poligonu.
     """
-
-    def __init__(self, position):
+    #sandi solution za infinite loop pri comparisonu v nasem endgame manevru -cene
+    def __init__(self, position, name = 'SATAN'):
         self.x = position['x']
         self.y = position['y']
-        
+        self.name = name
+
     def __str__(self):
         return '('+str(self.x)+', '+str(self.y)+')'
 
@@ -552,12 +553,18 @@ def robot_die():
     print('KONEC')
     motor_left.stop(stop_action='brake')
     motor_right.stop(stop_action='brake')
-    """
+   
+    drop_cage(motor_medium)
+
     Sound.play_song((
-        ('D4', 'e'),
-        ('C4', 'e'),
-        ('A3', 'h')))
-    """
+        ('E4', 's'),
+        ('E4', 'e'),
+        ('E4', 'e'),
+        ('C4', 's'),
+        ('E4', 'e'),
+        ('G4', 'q'),
+        ('G3', 'e')))
+    
     sys.exit(0)
 
 
@@ -790,8 +797,11 @@ else:
     print('Robot ne tekmuje.')
     robot_die()
 print('Robot tekmuje in ima interno oznako "' + team_my_tag + '"')
-
-
+"""
+# Endgame maneuver za čiščenje baze od grdih panjev, ki rabi tedve start / end točki; -cene
+ENDGAME_START = Point({"x": 250, "y": 250}, "ENDGAME_START")
+ENDGAME_END = Point({"x": 250, "y": 1750}, "ENDGAME_END")
+"""
 # -----------------------------------------------------------------------------
 # GLAVNA ZANKA
 # -----------------------------------------------------------------------------
@@ -1027,7 +1037,6 @@ while do_main_loop and not btn.down:
 
 
                 elif state == State.LOAD_NEXT_TARGET:
-
                     print("distance = " + str(DIST_EPS) + " hives="+str(hives_in_control) + "reset = " + str(reset_target)+ " collecting = " + str(collecting) + "bog="+ str(bogatenje))
                     if reset_target:
                         print("Reset9jg")
@@ -1086,7 +1095,8 @@ while do_main_loop and not btn.down:
                             lift_cage(motor_medium)
 
                             if diseaset:
-                                reverse_robot(motor_left, motor_right)
+                                #experimental -cene
+                                #reverse_robot(motor_left, motor_right)
                                 diseaset = False
 
                             HIVE_IGNORE_LIST.append(last_valid_target_idx)
@@ -1104,6 +1114,7 @@ while do_main_loop and not btn.down:
                             if target == None:
                                 target_idx = 0
                                 target = robot_pos
+                                #experimental change -cene
                                 robot_die()
                             else:
                                 diseaset = True
@@ -1119,6 +1130,30 @@ while do_main_loop and not btn.down:
 
                     reset_target = False
                     state = State.IDLE
+                    
+                    """
+                    #check za endgame maneuver -cene
+                    #if kibla dol, porihtaj prej
+                    if game_state['timeLeft'] < 120:
+                        #špageti -cene
+                        pogoj = True
+                        try:
+                            for panj in game_state['objects']['hives']:
+                                    if panj['type'] == "HIVE_HEALTHY":
+                                        pogoj = False
+                                        break
+                        except TypeError:
+                            pogoj = False
+
+                        if pogoj:
+                            print("mimo pogoja target_name:  ",target.name)
+                            if target.name == "ENDGAME_START":
+                                target = ENDGAME_END
+                            else:
+                                target = ENDGAME_START
+                    print("Current target: ",(target.x,target.y, target.name))
+                    print("Time: ", game_state['timeLeft'])
+                    """
 
                 elif state == State.TURN:
                     #ŠPAGET
