@@ -916,7 +916,7 @@ for chunk in grid.get_chunks():
 #print(str(grid))
 
 """
-#ŠPAGETNA KODA
+#ŠPAGETNA KODA debug pid/multiplier setter
 modifier = 10
 speed_right = 100
 speed_left = -100
@@ -1080,7 +1080,7 @@ while do_main_loop and not btn.down:
                                     target_idx = 0
                                     target = Point({"x": RICH_LINE, "y": robot_pos.y})
                                     bogatenje = True
-                                    if robot_pos.x > target.x:
+                                    if (team_my_tag == 'team1' and robot_pos.x > target.x) or (team_my_tag = 'team2' and robot_pos.x < target.x):
                                         if last_valid_target_idx not in HIVE_IGNORE_LIST:
                                             HIVE_IGNORE_LIST.append(last_valid_target_idx)
                                         bogatenje = False
