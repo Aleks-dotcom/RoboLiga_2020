@@ -556,6 +556,9 @@ def robot_die():
    
     drop_cage(motor_medium)
 
+    Sound.play_file('ttfatf.wav')
+
+    """
     Sound.play_song((
         ('E4', 's'),
         ('E4', 'e'),
@@ -564,6 +567,7 @@ def robot_die():
         ('E4', 'e'),
         ('G4', 'q'),
         ('G3', 'e')))
+    """
     
     sys.exit(0)
 
