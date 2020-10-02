@@ -812,7 +812,7 @@ ENDGAME_END = Point({"x": 250, "y": 1750}, "ENDGAME_END")
 print('Izvajam glavno zanko. Prekini jo s pritiskon na tipko DOL.')
 print('Cakam na zacetek tekme ...')
 
-Sound.play('primo_victoria.wav')
+
 
 Sound.speak(SONG_LYRICS)
 
@@ -952,6 +952,8 @@ while do_main_loop:
                                                 
 #END OF ŠPAGETd
 """
+Sound.play('primo_victoria.wav')
+
 while do_main_loop and not btn.down:
     try:
         time_now = time()
