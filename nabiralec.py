@@ -1040,6 +1040,7 @@ while do_main_loop and not btn.down:
                     else:
                         state = State.LOAD_NEXT_TARGET
                         found = True
+                        print("Found je bil set na True v line 1043")
                         reverse = False
                         set_near_values()
 
