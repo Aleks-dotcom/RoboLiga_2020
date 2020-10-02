@@ -1265,7 +1265,7 @@ while do_main_loop and not btn.down:
                         # Razdalja do cilja je znotraj tolerance, zamenjamo stanje.
                         speed_right = 0
                         speed_left = 0
-                        state = State.LOAD_NEXT_TARGET
+                        state = State.IDLE
                     elif timer_near_target < 0:
                         # Smo morda blizu cilja in je varnostna budilka potekla?
                         speed_right = 0
