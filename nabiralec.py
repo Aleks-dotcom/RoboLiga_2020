@@ -1048,6 +1048,7 @@ while do_main_loop and not btn.down:
                     print("distance = " + str(DIST_EPS) + " hives="+str(hives_in_control) + "reset = " + str(reset_target)+ " collecting = " + str(collecting) + "bog="+ str(bogatenje))
                     if reset_target:
                         print("Reset9jg")
+                        lift_cage(motor_medium)
                         collecting = False
                         if not diseaset:
                             lift_cage(motor_medium)
@@ -1101,13 +1102,16 @@ while do_main_loop and not btn.down:
                     else:
                         if not reset_target:
                             HIVE_IGNORE_LIST.clear()
-                            lift_cage(motor_medium)
+                            if not diseaset:
+                                lift_cage(motor_medium)
 
                             if diseaset:
                                 print("diseased smo pripeljali v opp bazo in zdej se diseaset = false")
                                 #experimental -cene
                                 #reverse_robot(motor_left, motor_right)
                                 diseaset = False
+                                while True:
+                                    print("sleeping")
 
                             HIVE_IGNORE_LIST.append(last_valid_target_idx)
                             reverse = False
