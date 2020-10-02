@@ -952,7 +952,7 @@ while do_main_loop:
                                                 
 #END OF ŠPAGETd
 """
-Sound.play('primo_victoria.wav')
+#Sound.play('primo_victoria.wav')
 
 while do_main_loop and not btn.down:
     try:
@@ -1049,7 +1049,8 @@ while do_main_loop and not btn.down:
                     if reset_target:
                         print("Reset9jg")
                         collecting = False
-                        lift_cage(motor_medium)
+                        if not diseaset:
+                            lift_cage(motor_medium)
 
                     # ce smo nasli panj gremo domov in obratno
                     if collecting:
@@ -1103,6 +1104,7 @@ while do_main_loop and not btn.down:
                             lift_cage(motor_medium)
 
                             if diseaset:
+                                print("diseased smo pripeljali v opp bazo in zdej se diseaset = false")
                                 #experimental -cene
                                 #reverse_robot(motor_left, motor_right)
                                 diseaset = False
