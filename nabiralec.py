@@ -966,8 +966,8 @@ while do_main_loop and not btn.down:
         else:
             state_changed = False
         state_old = state
-
-        print(state, reverse)
+        # -cene experimental
+        #print(state, reverse)
         # Osveži stanje tekme.
         game_state = conn.request()
         if game_state == -1:
@@ -1053,8 +1053,11 @@ while do_main_loop and not btn.down:
                         
                     # ce smo nasli panj gremo domov in obratno
                     if collecting:
+                        print("Collectamo!")
                         if not reset_target:
+                            print("Not reset targetamo!")
                             if found:
+                                print("Foundamo!")
                                 drop_cage(motor_medium)
                                 print("found and distance = " + str(DIST_EPS))
                                 hives_in_control = 1
