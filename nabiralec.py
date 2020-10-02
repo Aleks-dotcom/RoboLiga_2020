@@ -1050,9 +1050,7 @@ while do_main_loop and not btn.down:
                         print("Reset9jg")
                         lift_cage(motor_medium)
                         collecting = False
-                        if not diseaset:
-                            lift_cage(motor_medium)
-
+                        
                     # ce smo nasli panj gremo domov in obratno
                     if collecting:
                         if not reset_target:
@@ -1110,8 +1108,11 @@ while do_main_loop and not btn.down:
                                 #experimental -cene
                                 #reverse_robot(motor_left, motor_right)
                                 diseaset = False
-                                while True:
-                                    print("sleeping")
+                                #zaenkrat se zaklenimo v njihovo bazo -tbd- -cene
+                                motor_left.stop(stop_action='brake')
+                                motor_right.stop(stop_action='brake')
+                                #do what next??
+
 
                             HIVE_IGNORE_LIST.append(last_valid_target_idx)
                             reverse = False
